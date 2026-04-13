@@ -413,6 +413,21 @@ body {
   box-shadow: 4px 4px 0 #2a1a00;
   font-weight: 700;
   font-size: 13px;
+  color: #2a1a00;
+  font-family: 'Fredoka', sans-serif;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+}
+.type-card:hover {
+  transform: translate(-2px, -2px) rotate(-1deg);
+  box-shadow: 7px 7px 0 #2a1a00;
+  background: #fff2c4;
+}
+.type-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #2a1a00;
 }
 .type-card .type-emoji { font-size: 36px; display: block; margin-bottom: 4px; transition: transform 0.25s; }
 .type-card .type-title { font-family: 'Bungee', sans-serif; font-size: 13px; }

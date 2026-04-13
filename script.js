@@ -448,6 +448,76 @@ function pickAnswer(a) {
 }
 
 // ============ RESULT REVEAL ============
+function renderAllTypes(activeKey) {
+  const grid = $('allTypesGrid');
+  grid.innerHTML = '';
+  Object.entries(TYPES).forEach(([key, type]) => {
+    const card = document.createElement('button');
+    card.className = 'type-card';
+    card.type = 'button';
+    if (key === activeKey) card.classList.add('winner');
+    card.innerHTML = `
+      <span class="type-emoji">${type.emoji}</span>
+      <div class="type-title">${type.name.replace('THE ', '')}</div>
+      <div class="type-tiny">${type.tag}</div>
+    `;
+    card.addEventListener('click', (e) => {
+      ripple(e);
+      buttonBurst(e, { count: 16, force: 0.8 });
+      floatEmoji(e.clientX, e.clientY - 10, type.emoji);
+      showType(key);
+    });
+    grid.appendChild(card);
+  });
+}
+
+function showType(key) {
+  const t = TYPES[key];
+  $('resultEmoji').textContent = t.emoji;
+  $('resultName').textContent = t.name;
+  $('resultTag').textContent = `"${t.tag}"`;
+  $('resultDesc').textContent = t.desc;
+  $('bestFriend').textContent = t.bestFriend;
+  $('worstEnemy').textContent = t.worstEnemy;
+  $('catchphrase').textContent = t.catchphrase;
+
+  // animate emoji pop
+  $('resultEmoji').animate(
+    [
+      { transform: 'scale(0.6) rotate(-15deg)' },
+      { transform: 'scale(1.25) rotate(8deg)', offset: 0.6 },
+      { transform: 'scale(1) rotate(0deg)' }
+    ],
+    { duration: 500, easing: 'cubic-bezier(0.2, 1.6, 0.4, 1)' }
+  );
+
+  // reset then animate stat bars
+  ['statGrease', 'statChaos', 'statHeart', 'statCrunch'].forEach(id => {
+    $(id).style.transition = 'none';
+    $(id).style.width = '0%';
+  });
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      ['statGrease', 'statChaos', 'statHeart', 'statCrunch'].forEach(id => {
+        $(id).style.transition = 'width 0.8s ease';
+      });
+      $('statGrease').style.width = t.stats.grease + '%';
+      $('statChaos').style.width = t.stats.chaos + '%';
+      $('statHeart').style.width = t.stats.heart + '%';
+      $('statCrunch').style.width = t.stats.crunch + '%';
+    });
+  });
+
+  // scroll up to the result, and update active card highlight
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('winner'));
+  const cards = document.querySelectorAll('.all-types-grid .type-card');
+  const keys = Object.keys(TYPES);
+  const idx = keys.indexOf(key);
+  if (cards[idx]) cards[idx].classList.add('winner');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function showResult() {
   const winner = Object.entries(state.scores).sort((a, b) => b[1] - a[1])[0][0];
   const t = TYPES[winner];
@@ -460,19 +530,7 @@ function showResult() {
   $('catchphrase').textContent = t.catchphrase;
 
   // Render all types
-  const grid = $('allTypesGrid');
-  grid.innerHTML = '';
-  Object.entries(TYPES).forEach(([key, type]) => {
-    const card = document.createElement('div');
-    card.className = 'type-card';
-    if (key === winner) card.classList.add('winner');
-    card.innerHTML = `
-      <span class="type-emoji">${type.emoji}</span>
-      <div class="type-title">${type.name.replace('THE ', '')}</div>
-      <div class="type-tiny">${type.tag}</div>
-    `;
-    grid.appendChild(card);
-  });
+  renderAllTypes(winner);
 
   swipeTransition('#e5202f');
   setTimeout(() => {
