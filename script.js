@@ -1,195 +1,567 @@
-// ============ FOOD PERSONALITY TYPES ============
-const TYPES = {
-  hamburger: {
-    emoji: "🍔",
-    name: "THE HAMBURGER",
-    tag: "The Reliable Classic",
-    desc: "You are the dependable backbone of every friend group. Not flashy, not loud, just consistently satisfying. You show up on time, you remember birthdays, and you always know where the good napkins are. People order you because they know exactly what they're getting — and honestly? That's a superpower. You are American cinema. You are a solid handshake. You are two buns holding society together.",
-    bestFriend: "🍟 French Fries",
-    worstEnemy: "🥗 A Sad Desk Salad",
-    catchphrase: "\"I'll have what everyone's having.\"",
-    stats: { grease: 80, chaos: 40, heart: 90, crunch: 50 }
+// =====================================================
+// FFTI — Fast Food Type Indicator (i18n: ja default, en)
+// =====================================================
+
+// ============ UI STRINGS ============
+const UI = {
+  ja: {
+    tag: "ファストフード性格診断 — 100% 無栄養",
+    heroLine1: "あなたは",
+    heroLine2: "どの",
+    heroLine3: "ファストフード？",
+    heroSub: "星座占いはもう古い。MBTIは終わった。心理カウンセラーもそっと置いておこう。科学*が証明しました。人間は皆、心の奥底で「脂っこいメニュー」です。テストを受けて、運命を受け入れよう。",
+    startBtn: "診断スタート",
+    startSub: "🍟 全12問 ・ カロリーゼロ（情報量も）",
+    disclaimer: "*科学ではありません。論文に引用しないでください。",
+    menuTitle: "★ 本日のラインナップ ★",
+    orderLabel: "注文番号 #000001",
+    thankYou: "自分を注文してくれてありがとう",
+    resultStamp: "おめでとう、あなたは…",
+    statGrease: "脂っこさ",
+    statChaos: "カオス度",
+    statHeart: "ハート",
+    statCrunch: "カリカリ度",
+    bestFriendLabel: "相性 ◎",
+    worstEnemyLabel: "相性 ✕",
+    catchphraseLabel: "あなたの口ぐせ：",
+    retakeBtn: "🔁 もう一度診断",
+    shareBtn: "📣 自慢する",
+    allTypesTitle: "全メニュー一覧（タップで切替）",
+    footerLeft: "FFTI™ は誰の登録商標でもありません。カロリー情報：あります。",
+    footerRight: "© 2026 ・ 🧈 と若干の判断力で作成",
+    progress: (i, total) => `第 ${i} 問 / 全 ${total} 問`,
+    orderNum: (n) => `注文番号 #${n}`,
+    shareText: (name) => `FFTI 診断を受けたら「${name}」でした。どういうこと？`,
+    shareTitle: "私のファストフードタイプ",
+    copied: "✅ コピー済み！",
+    pageTitle: "FFTI — ファストフード性格診断"
   },
-  hotdog: {
-    emoji: "🌭",
-    name: "THE HOT DOG",
-    tag: "The Unhinged Minimalist",
-    desc: "You are a mystery wrapped in a bun. Nobody fully understands what you're made of, and frankly, neither do you. You thrive in chaos — at ballparks, at 2 AM, in a gas station — anywhere loud and slightly suspicious. You've been called a sandwich. You've been called a taco. You've transcended categorization. You exist on pure vibes and processed confidence.",
-    bestFriend: "🥨 A Pretzel",
-    worstEnemy: "📋 A Labeling System",
-    catchphrase: "\"Don't ask questions. Just eat me.\"",
-    stats: { grease: 70, chaos: 95, heart: 60, crunch: 20 }
-  },
-  ramen: {
-    emoji: "🍜",
-    name: "THE RAMEN",
-    tag: "The Deep Thinker",
-    desc: "You have layers. Like, a concerning amount of layers. You're steaming hot, complicated, and you take a full 20 minutes just to cool down enough to engage with. People come to you when they want comfort AND an emotional journey. You cried during a Pixar short last week. You have opinions about broth. You are simultaneously the cheapest meal and the most expensive meal, depending on who made you.",
-    bestFriend: "🥚 A Soft-Boiled Egg",
-    worstEnemy: "⏰ Being Rushed",
-    catchphrase: "\"Let it simmer. I'm processing.\"",
-    stats: { grease: 55, chaos: 50, heart: 95, crunch: 30 }
-  },
-  pizza: {
-    emoji: "🍕",
-    name: "THE PIZZA",
-    tag: "The Universal Crowd-Pleaser",
-    desc: "You are a party. Literally. No event is complete without you, and if you show up late, the whole mood suffers. You're flexible (thin crust? deep dish? Tuesday?), you feed a crowd, and everyone has a 'their slice.' You've ended fights. You've started fights (looking at you, pineapple). You are triangular, structural, and deeply beloved. If democracy had a flavor, it would be you.",
-    bestFriend: "🥤 Literally Any Soda",
-    worstEnemy: "🥄 A Fork and Knife",
-    catchphrase: "\"I'm bringing everyone together.\"",
-    stats: { grease: 85, chaos: 60, heart: 85, crunch: 60 }
-  },
-  taco: {
-    emoji: "🌮",
-    name: "THE TACO",
-    tag: "The Beautiful Disaster",
-    desc: "You are fun. You are messy. You are falling apart the second someone picks you up, and you would not have it any other way. Your life philosophy is 'more is more.' You have dropped at least three important things on the floor this week. You say yes to plans. You say yes to hot sauce. You say yes to adding guac for $2 extra. Your charm is that you were never going to stay together, and nobody came here expecting you to.",
-    bestFriend: "🍹 A Margarita",
-    worstEnemy: "👔 A White Shirt",
-    catchphrase: "\"It's FINE. It's going to be FINE.\"",
-    stats: { grease: 60, chaos: 90, heart: 80, crunch: 75 }
-  },
-  sushi: {
-    emoji: "🍣",
-    name: "THE SUSHI",
-    tag: "The Refined Perfectionist",
-    desc: "You are elegant. Precise. A little intimidating. You have strong opinions about rice-to-fish ratios and you will not hesitate to share them. People are either obsessed with you or mildly afraid of you — there's no middle ground. You've mastered the art of making 'minimalist' look expensive. You own at least one nice pen. You have a skincare routine. You are probably judging this quiz right now.",
-    bestFriend: "🍵 Green Tea",
-    worstEnemy: "🥫 A Can of Beans",
-    catchphrase: "\"Actually, it's pronounced…\"",
-    stats: { grease: 20, chaos: 25, heart: 70, crunch: 40 }
-  },
-  friedchicken: {
-    emoji: "🍗",
-    name: "THE FRIED CHICKEN",
-    tag: "The Charmer With Secrets",
-    desc: "You are crispy on the outside, soft on the inside, and you run on a blend of herbs and spices nobody is allowed to know. You walk into rooms and people just… turn. You're a storyteller. A hugger. A 'should we get dessert?' person. Your best friend calls you at 11 PM crying and you are ALREADY putting on pants. You carry napkins. You carry emotional weight. You carry the group chat.",
-    bestFriend: "🧇 A Waffle",
-    worstEnemy: "🧻 Being Judged for Using Your Hands",
-    catchphrase: "\"Oh honey, come sit down.\"",
-    stats: { grease: 90, chaos: 55, heart: 90, crunch: 95 }
-  },
-  donut: {
-    emoji: "🍩",
-    name: "THE DONUT",
-    tag: "The Sweet Optimist",
-    desc: "You are round, sweet, and you have a hole where your anxiety used to be (you filled it with sprinkles). You are pure serotonin in pastry form. You've never met a Monday you couldn't improve. You believe in love. You believe in naps. You believe that yes, we SHOULD get one for the office. Some people say you have no substance — but those people are wrong and also need a hug and maybe a donut.",
-    bestFriend: "☕ A Large Coffee",
-    worstEnemy: "🥦 Meal Prep Culture",
-    catchphrase: "\"Everything's going to be glazed.\"",
-    stats: { grease: 50, chaos: 35, heart: 100, crunch: 30 }
+  en: {
+    tag: "Fast Food Type Indicator — Now with 100% More Grease",
+    heroLine1: "WHAT KIND OF",
+    heroLine2: "FAST FOOD",
+    heroLine3: "ARE YOU?",
+    heroSub: "Forget horoscopes. Forget Myers-Briggs. Forget your therapist's \"inner child work.\" Science* has determined that every human being is, at their core, a greasy menu item. Take the quiz. Learn the truth. Accept your destiny.",
+    startBtn: "START QUIZ",
+    startSub: "🍟 12 questions · 0 nutritional value",
+    disclaimer: "*Not actual science. Please do not cite this in your dissertation.",
+    menuTitle: "★ TODAY'S SPECIALS ★",
+    orderLabel: "ORDER #000001",
+    thankYou: "THANK YOU FOR CHOOSING YOURSELF",
+    resultStamp: "CONGRATULATIONS, YOU ARE A…",
+    statGrease: "GREASE",
+    statChaos: "CHAOS",
+    statHeart: "HEART",
+    statCrunch: "CRUNCH",
+    bestFriendLabel: "BEST FRIEND",
+    worstEnemyLabel: "WORST ENEMY",
+    catchphraseLabel: "YOUR CATCHPHRASE:",
+    retakeBtn: "🔁 RETAKE QUIZ",
+    shareBtn: "📣 BRAG ABOUT IT",
+    allTypesTitle: "THE FULL MENU OF PERSONALITIES",
+    footerLeft: "FFTI™ is a registered trademark of nobody. Calorie info: yes.",
+    footerRight: "© 2026 · Made with 🧈 and questionable judgment",
+    progress: (i, total) => `QUESTION ${i} / ${total}`,
+    orderNum: (n) => `ORDER #${n}`,
+    shareText: (name) => `I took the FFTI quiz and apparently I'm ${name}. Explain yourselves.`,
+    shareTitle: "My Fast Food Type",
+    copied: "✅ COPIED!",
+    pageTitle: "FFTI — The Fast Food Type Indicator"
   }
 };
 
-// ============ QUIZ QUESTIONS ============
+// ============ FOOD TYPES ============
+const TYPES = {
+  hamburger: {
+    emoji: "🍔",
+    stats: { grease: 80, chaos: 40, heart: 90, crunch: 50 },
+    ja: {
+      name: "ハンバーガー型",
+      short: "ハンバーガー",
+      tag: "安定のクラシック",
+      desc: "あなたはどのグループにも一人はいる「いてくれるだけで安心する人」。派手じゃない、うるさくない、ただ確実に満足させてくれる。約束の時間に遅れない。誕生日を覚えている。コンビニで一番美味しいおにぎりも知っている。みんながあなたを「注文する」のは、何が出てくるか分かっているから。それ、地味に超能力です。あなたは土曜の昼下がりの安心感。しっかりした握手。社会をそっと支えている二枚のバンズです。",
+      bestFriend: "🍟 ポテト",
+      worstEnemy: "🥗 デスクで食べる寂しいサラダ",
+      catchphrase: "「みんなと同じでいいです」"
+    },
+    en: {
+      name: "THE HAMBURGER",
+      short: "HAMBURGER",
+      tag: "The Reliable Classic",
+      desc: "You are the dependable backbone of every friend group. Not flashy, not loud, just consistently satisfying. You show up on time, you remember birthdays, and you always know where the good napkins are. People order you because they know exactly what they're getting — and honestly? That's a superpower. You are American cinema. You are a solid handshake. You are two buns holding society together.",
+      bestFriend: "🍟 French Fries",
+      worstEnemy: "🥗 A Sad Desk Salad",
+      catchphrase: "\"I'll have what everyone's having.\""
+    }
+  },
+  hotdog: {
+    emoji: "🌭",
+    stats: { grease: 70, chaos: 95, heart: 60, crunch: 20 },
+    ja: {
+      name: "ホットドッグ型",
+      short: "ホットドッグ",
+      tag: "カオスなミニマリスト",
+      desc: "あなたはパンに包まれたミステリー。何でできているのか誰も知らないし、正直あなた自身もよく分かっていない。ドーム球場、終電後のコンビニ前、深夜のガソスタ — とにかくうるさくてちょっと怪しい場所で本領発揮。「これってサンドイッチ？」「タコス？」と分類されかけるたびに、あなたは全てを超越してきた。加工された自信と勢いだけで生きている、それがあなた。",
+      bestFriend: "🥨 プレッツェル",
+      worstEnemy: "📋 カテゴリー分けしたがる人",
+      catchphrase: "「深く考えるな。食え。」"
+    },
+    en: {
+      name: "THE HOT DOG",
+      short: "HOT DOG",
+      tag: "The Unhinged Minimalist",
+      desc: "You are a mystery wrapped in a bun. Nobody fully understands what you're made of, and frankly, neither do you. You thrive in chaos — at ballparks, at 2 AM, in a gas station — anywhere loud and slightly suspicious. You've been called a sandwich. You've been called a taco. You've transcended categorization. You exist on pure vibes and processed confidence.",
+      bestFriend: "🥨 A Pretzel",
+      worstEnemy: "📋 A Labeling System",
+      catchphrase: "\"Don't ask questions. Just eat me.\""
+    }
+  },
+  ramen: {
+    emoji: "🍜",
+    stats: { grease: 55, chaos: 50, heart: 95, crunch: 30 },
+    ja: {
+      name: "ラーメン型",
+      short: "ラーメン",
+      tag: "こじらせ思想家",
+      desc: "あなたには層がある。ちょっと心配になるぐらい、層がある。熱くて、複雑で、冷めるまで20分は話しかけられない。人があなたに求めるのは「癒し」＆「深イイ話」。先週もPixarの短編で泣いた。スープに哲学がある。同じラーメンでも作り手によって最安にも最高級にもなる、それがあなた。",
+      bestFriend: "🥚 半熟たまご",
+      worstEnemy: "⏰ 急かされること",
+      catchphrase: "「ちょっと待って、今考えてる」"
+    },
+    en: {
+      name: "THE RAMEN",
+      short: "RAMEN",
+      tag: "The Deep Thinker",
+      desc: "You have layers. Like, a concerning amount of layers. You're steaming hot, complicated, and you take a full 20 minutes just to cool down enough to engage with. People come to you when they want comfort AND an emotional journey. You cried during a Pixar short last week. You have opinions about broth. You are simultaneously the cheapest meal and the most expensive meal, depending on who made you.",
+      bestFriend: "🥚 A Soft-Boiled Egg",
+      worstEnemy: "⏰ Being Rushed",
+      catchphrase: "\"Let it simmer. I'm processing.\""
+    }
+  },
+  pizza: {
+    emoji: "🍕",
+    stats: { grease: 85, chaos: 60, heart: 85, crunch: 60 },
+    ja: {
+      name: "ピザ型",
+      short: "ピザ",
+      tag: "全員から愛されるタイプ",
+      desc: "あなた＝パーティー。もう文字通り。あなたがいないと飲み会の空気が成立しない。遅刻すると全員の機嫌が下がる。薄い？厚い？火曜日？何でもOK。みんなに「自分の一切れ」がある。あなたは争いを止めたことも、始めたこともある（パイナップルの件）。三角形で、構造的で、深く愛される存在。民主主義に味があるなら、それはあなたです。",
+      bestFriend: "🥤 何でもいいから炭酸",
+      worstEnemy: "🥄 ナイフとフォーク",
+      catchphrase: "「みんな呼んじゃお」"
+    },
+    en: {
+      name: "THE PIZZA",
+      short: "PIZZA",
+      tag: "The Universal Crowd-Pleaser",
+      desc: "You are a party. Literally. No event is complete without you, and if you show up late, the whole mood suffers. You're flexible (thin crust? deep dish? Tuesday?), you feed a crowd, and everyone has a 'their slice.' You've ended fights. You've started fights (looking at you, pineapple). You are triangular, structural, and deeply beloved. If democracy had a flavor, it would be you.",
+      bestFriend: "🥤 Literally Any Soda",
+      worstEnemy: "🥄 A Fork and Knife",
+      catchphrase: "\"I'm bringing everyone together.\""
+    }
+  },
+  taco: {
+    emoji: "🌮",
+    stats: { grease: 60, chaos: 90, heart: 80, crunch: 75 },
+    ja: {
+      name: "タコス型",
+      short: "タコス",
+      tag: "美しい崩壊",
+      desc: "楽しい。散らかる。手に持った瞬間に崩れる。それでいい、それが最高。あなたの人生哲学は「どんどんのせろ」。今週すでに3回は何かを床に落とした。誘われたら行く。辛いソースも入れる。ワカモレ追加+200円も即ポチる。最初から綺麗にまとまる気はなかった。誰もあなたにそんなこと期待してない。それがチャーミングポイント。",
+      bestFriend: "🍹 マルガリータ",
+      worstEnemy: "👔 白いシャツ",
+      catchphrase: "「大丈夫、どうにかなる！」"
+    },
+    en: {
+      name: "THE TACO",
+      short: "TACO",
+      tag: "The Beautiful Disaster",
+      desc: "You are fun. You are messy. You are falling apart the second someone picks you up, and you would not have it any other way. Your life philosophy is 'more is more.' You have dropped at least three important things on the floor this week. You say yes to plans. You say yes to hot sauce. You say yes to adding guac for $2 extra. Your charm is that you were never going to stay together, and nobody came here expecting you to.",
+      bestFriend: "🍹 A Margarita",
+      worstEnemy: "👔 A White Shirt",
+      catchphrase: "\"It's FINE. It's going to be FINE.\""
+    }
+  },
+  sushi: {
+    emoji: "🍣",
+    stats: { grease: 20, chaos: 25, heart: 70, crunch: 40 },
+    ja: {
+      name: "寿司型",
+      short: "寿司",
+      tag: "こだわりの完璧主義者",
+      desc: "上品。繊細。ちょっと近寄りがたい。シャリとネタのバランスに強いこだわりがあり、それを遠慮なく語る。周りはあなたに「めっちゃ好き」か「ちょっと怖い」かのどちらか。中間はない。「ミニマル」を高級に見せる達人。良い万年筆を持っている。スキンケアにも手を抜かない。この診断にも内心ちょっとツッコんでる。",
+      bestFriend: "🍵 緑茶",
+      worstEnemy: "🥫 コンビニの缶詰",
+      catchphrase: "「実はそれ、正しくは…」"
+    },
+    en: {
+      name: "THE SUSHI",
+      short: "SUSHI",
+      tag: "The Refined Perfectionist",
+      desc: "You are elegant. Precise. A little intimidating. You have strong opinions about rice-to-fish ratios and you will not hesitate to share them. People are either obsessed with you or mildly afraid of you — there's no middle ground. You've mastered the art of making 'minimalist' look expensive. You own at least one nice pen. You have a skincare routine. You are probably judging this quiz right now.",
+      bestFriend: "🍵 Green Tea",
+      worstEnemy: "🥫 A Can of Beans",
+      catchphrase: "\"Actually, it's pronounced…\""
+    }
+  },
+  friedchicken: {
+    emoji: "🍗",
+    stats: { grease: 90, chaos: 55, heart: 90, crunch: 95 },
+    ja: {
+      name: "からあげ型",
+      short: "からあげ",
+      tag: "秘密を抱えた癒し系",
+      desc: "外はカリッ、中はジュワッ。秘伝のスパイス配合は誰にも教えない。あなたが部屋に入ると、みんな自然と振り向く。話し上手で、ハグ上手で、「〆にもう一軒行く？」って言える人。親友が23時に泣きながらLINEしてきたら、もうズボンを履いている。ウェットティッシュも持ってる。感情の重さも受け止めてる。グループLINEの中心もあなた。",
+      bestFriend: "🍙 白ごはん",
+      worstEnemy: "🧻 手で食べるのを白い目で見る人",
+      catchphrase: "「ちょっとそこ座って、話そ？」"
+    },
+    en: {
+      name: "THE FRIED CHICKEN",
+      short: "FRIED CHICKEN",
+      tag: "The Charmer With Secrets",
+      desc: "You are crispy on the outside, soft on the inside, and you run on a blend of herbs and spices nobody is allowed to know. You walk into rooms and people just… turn. You're a storyteller. A hugger. A 'should we get dessert?' person. Your best friend calls you at 11 PM crying and you are ALREADY putting on pants. You carry napkins. You carry emotional weight. You carry the group chat.",
+      bestFriend: "🧇 A Waffle",
+      worstEnemy: "🧻 Being Judged for Using Your Hands",
+      catchphrase: "\"Oh honey, come sit down.\""
+    }
+  },
+  donut: {
+    emoji: "🍩",
+    stats: { grease: 50, chaos: 35, heart: 100, crunch: 30 },
+    ja: {
+      name: "ドーナツ型",
+      short: "ドーナツ",
+      tag: "甘党の楽観主義者",
+      desc: "まんまる。甘い。不安があった場所には、今はスプリンクルが詰まっている。あなたは生菓子の形をしたセロトニン。月曜の朝ですら「今日もいけそう」と思える人。愛を信じる。昼寝を信じる。「これ職場のみんなにも買って帰ろ」と即決できる。たまに「中身ないよね」と言う人もいるけど、その人こそハグとドーナツが必要なだけ。",
+      bestFriend: "☕ 特大コーヒー",
+      worstEnemy: "🥦 ストイックな作り置き勢",
+      catchphrase: "「大丈夫、全部うまくいくよ〜」"
+    },
+    en: {
+      name: "THE DONUT",
+      short: "DONUT",
+      tag: "The Sweet Optimist",
+      desc: "You are round, sweet, and you have a hole where your anxiety used to be (you filled it with sprinkles). You are pure serotonin in pastry form. You've never met a Monday you couldn't improve. You believe in love. You believe in naps. You believe that yes, we SHOULD get one for the office. Some people say you have no substance — but those people are wrong and also need a hug and maybe a donut.",
+      bestFriend: "☕ A Large Coffee",
+      worstEnemy: "🥦 Meal Prep Culture",
+      catchphrase: "\"Everything's going to be glazed.\""
+    }
+  }
+};
+
+// ============ QUESTIONS ============
 const QUESTIONS = [
   {
-    q: "It's 2 AM. You are hungry. What's the move?",
+    ja: { q: "深夜2時、お腹がすいた。どうする？" },
+    en: { q: "It's 2 AM. You are hungry. What's the move?" },
     answers: [
-      { text: "Whatever's in the fridge, eaten cold, over the sink.", emoji: "🥶", scores: { hotdog: 2, taco: 1 } },
-      { text: "Carefully assemble a small, elegant snack on a real plate.", emoji: "🍽️", scores: { sushi: 2, ramen: 1 } },
-      { text: "Text someone. This is a group activity now.", emoji: "📱", scores: { pizza: 2, friedchicken: 1 } },
-      { text: "Something sweet. Always something sweet.", emoji: "🍰", scores: { donut: 2, hamburger: 1 } }
+      {
+        ja: { text: "冷蔵庫の中のものを、立ったまま、冷たいまま食べる。" },
+        en: { text: "Whatever's in the fridge, eaten cold, over the sink." },
+        emoji: "🥶", scores: { hotdog: 2, taco: 1 }
+      },
+      {
+        ja: { text: "ちゃんとお皿に盛って、小さくて上品な夜食を作る。" },
+        en: { text: "Carefully assemble a small, elegant snack on a real plate." },
+        emoji: "🍽️", scores: { sushi: 2, ramen: 1 }
+      },
+      {
+        ja: { text: "誰かにLINE。これはもう団体戦。" },
+        en: { text: "Text someone. This is a group activity now." },
+        emoji: "📱", scores: { pizza: 2, friedchicken: 1 }
+      },
+      {
+        ja: { text: "甘いもの。なんだかんだ言って甘いもの。" },
+        en: { text: "Something sweet. Always something sweet." },
+        emoji: "🍰", scores: { donut: 2, hamburger: 1 }
+      }
     ]
   },
   {
-    q: "Pick your weekend aesthetic:",
+    ja: { q: "理想の週末を選んで：" },
+    en: { q: "Pick your weekend aesthetic:" },
     answers: [
-      { text: "Outdoor festival, questionable footwear, at least one unplanned friendship.", emoji: "🎪", scores: { taco: 2, hotdog: 1 } },
-      { text: "Cozy apartment. Book. Blanket. A beverage that requires a coaster.", emoji: "📚", scores: { ramen: 2, sushi: 1 } },
-      { text: "Everyone's at my place and somehow I'm hosting again.", emoji: "🏠", scores: { pizza: 2, friedchicken: 1 } },
-      { text: "Errands, but make them pleasant. I got a little treat.", emoji: "🛍️", scores: { donut: 2, hamburger: 1 } }
+      {
+        ja: { text: "フェス。謎の靴。気づいたら知らない人と友達になってる。" },
+        en: { text: "Outdoor festival, questionable footwear, at least one unplanned friendship." },
+        emoji: "🎪", scores: { taco: 2, hotdog: 1 }
+      },
+      {
+        ja: { text: "部屋でぬくぬく。本。ブランケット。コースター必須の飲み物。" },
+        en: { text: "Cozy apartment. Book. Blanket. A beverage that requires a coaster." },
+        emoji: "📚", scores: { ramen: 2, sushi: 1 }
+      },
+      {
+        ja: { text: "なぜかまた自分の家でホームパーティー開催中。" },
+        en: { text: "Everyone's at my place and somehow I'm hosting again." },
+        emoji: "🏠", scores: { pizza: 2, friedchicken: 1 }
+      },
+      {
+        ja: { text: "用事を気分よく片付ける。ついでに自分へのご褒美。" },
+        en: { text: "Errands, but make them pleasant. I got a little treat." },
+        emoji: "🛍️", scores: { donut: 2, hamburger: 1 }
+      }
     ]
   },
   {
-    q: "A friend is going through it. You:",
+    ja: { q: "友達がちょっと病んでる。あなたは：" },
+    en: { q: "A friend is going through it. You:" },
     answers: [
-      { text: "Show up physically with food and stay until they fall asleep.", emoji: "💕", scores: { friedchicken: 2, ramen: 1 } },
-      { text: "Send a beautifully worded text and a thoughtful gift.", emoji: "💌", scores: { sushi: 2, donut: 1 } },
-      { text: "Plan a wild night out to take their mind off it.", emoji: "🎉", scores: { taco: 2, pizza: 1 } },
-      { text: "Just be normal around them. They don't need a production.", emoji: "🤝", scores: { hamburger: 2, hotdog: 1 } }
+      {
+        ja: { text: "ごはん持って直接行く。寝るまでそばにいる。" },
+        en: { text: "Show up physically with food and stay until they fall asleep." },
+        emoji: "💕", scores: { friedchicken: 2, ramen: 1 }
+      },
+      {
+        ja: { text: "言葉を選び抜いた長文LINEと、ちょっと気の利いたプレゼント。" },
+        en: { text: "Send a beautifully worded text and a thoughtful gift." },
+        emoji: "💌", scores: { sushi: 2, donut: 1 }
+      },
+      {
+        ja: { text: "ド派手な夜遊びを計画して忘れさせる。" },
+        en: { text: "Plan a wild night out to take their mind off it." },
+        emoji: "🎉", scores: { taco: 2, pizza: 1 }
+      },
+      {
+        ja: { text: "いつも通り接する。下手に演出するほうが逆に気を遣わせる。" },
+        en: { text: "Just be normal around them. They don't need a production." },
+        emoji: "🤝", scores: { hamburger: 2, hotdog: 1 }
+      }
     ]
   },
   {
-    q: "Your texting style is best described as:",
+    ja: { q: "あなたのLINEの文体は？" },
+    en: { q: "Your texting style is best described as:" },
     answers: [
-      { text: "Paragraphs. Voice notes. A whole novel.", emoji: "📖", scores: { ramen: 2, friedchicken: 1 } },
-      { text: "'k'", emoji: "💀", scores: { hotdog: 2, hamburger: 1 } },
-      { text: "A chaotic mess of typos, emojis, and three separate topics.", emoji: "🌪️", scores: { taco: 2, pizza: 1 } },
-      { text: "Perfectly punctuated. Maybe a cute sign-off.", emoji: "✨", scores: { sushi: 2, donut: 1 } }
+      {
+        ja: { text: "長文。ボイスメッセージ。ほぼ小説。" },
+        en: { text: "Paragraphs. Voice notes. A whole novel." },
+        emoji: "📖", scores: { ramen: 2, friedchicken: 1 }
+      },
+      {
+        ja: { text: "「りょ」" },
+        en: { text: "'k'" },
+        emoji: "💀", scores: { hotdog: 2, hamburger: 1 }
+      },
+      {
+        ja: { text: "誤字と絵文字と話題が3つ混ざったカオス。" },
+        en: { text: "A chaotic mess of typos, emojis, and three separate topics." },
+        emoji: "🌪️", scores: { taco: 2, pizza: 1 }
+      },
+      {
+        ja: { text: "句読点まできっちり。ちょっと可愛い締めの一言付き。" },
+        en: { text: "Perfectly punctuated. Maybe a cute sign-off." },
+        emoji: "✨", scores: { sushi: 2, donut: 1 }
+      }
     ]
   },
   {
-    q: "How do you handle Mondays?",
+    ja: { q: "月曜日との向き合い方は？" },
+    en: { q: "How do you handle Mondays?" },
     answers: [
-      { text: "I fear no day. Mondays are just days with good lighting.", emoji: "☀️", scores: { donut: 2, pizza: 1 } },
-      { text: "I grind. I drink water. I execute.", emoji: "💪", scores: { sushi: 2, hamburger: 1 } },
-      { text: "I retreat into my shell. Do not speak to me until noon.", emoji: "🐚", scores: { ramen: 2 } },
-      { text: "I somehow arrive late AND overcaffeinated. Unclear how.", emoji: "⚡", scores: { taco: 2, hotdog: 1 } }
+      {
+        ja: { text: "月曜？ただの光のきれいな平日でしょ。" },
+        en: { text: "I fear no day. Mondays are just days with good lighting." },
+        emoji: "☀️", scores: { donut: 2, pizza: 1 }
+      },
+      {
+        ja: { text: "粛々と仕事する。水を飲む。タスクを倒す。" },
+        en: { text: "I grind. I drink water. I execute." },
+        emoji: "💪", scores: { sushi: 2, hamburger: 1 }
+      },
+      {
+        ja: { text: "殻にこもる。昼までは話しかけないでほしい。" },
+        en: { text: "I retreat into my shell. Do not speak to me until noon." },
+        emoji: "🐚", scores: { ramen: 2 }
+      },
+      {
+        ja: { text: "遅刻してるのにカフェイン過剰。謎。" },
+        en: { text: "I somehow arrive late AND overcaffeinated. Unclear how." },
+        emoji: "⚡", scores: { taco: 2, hotdog: 1 }
+      }
     ]
   },
   {
-    q: "Your ideal first date is:",
+    ja: { q: "理想の初デートは？" },
+    en: { q: "Your ideal first date is:" },
     answers: [
-      { text: "A dive bar. Chaos. Energy. Maybe karaoke.", emoji: "🎤", scores: { hotdog: 2, taco: 1 } },
-      { text: "A nice restaurant where the waiter says 'very good choice.'", emoji: "🍷", scores: { sushi: 2, friedchicken: 1 } },
-      { text: "A long walk where we accidentally tell each other EVERYTHING.", emoji: "🚶", scores: { ramen: 2, donut: 1 } },
-      { text: "Literally just get pizza. I don't need a theme.", emoji: "🍕", scores: { pizza: 2, hamburger: 1 } }
+      {
+        ja: { text: "ガヤガヤした居酒屋。カオス。テンション高め。カラオケもアリ。" },
+        en: { text: "A dive bar. Chaos. Energy. Maybe karaoke." },
+        emoji: "🎤", scores: { hotdog: 2, taco: 1 }
+      },
+      {
+        ja: { text: "店員さんに「お目が高い」と言われるタイプの店。" },
+        en: { text: "A nice restaurant where the waiter says 'very good choice.'" },
+        emoji: "🍷", scores: { sushi: 2, friedchicken: 1 }
+      },
+      {
+        ja: { text: "長めの散歩。気づいたらお互いの全部を話してる。" },
+        en: { text: "A long walk where we accidentally tell each other EVERYTHING." },
+        emoji: "🚶", scores: { ramen: 2, donut: 1 }
+      },
+      {
+        ja: { text: "とりあえずピザ。テーマとかいらない。" },
+        en: { text: "Literally just get pizza. I don't need a theme." },
+        emoji: "🍕", scores: { pizza: 2, hamburger: 1 }
+      }
     ]
   },
   {
-    q: "Pick a chaotic truth about yourself:",
+    ja: { q: "カオスな自分の真実、一つ選んで：" },
+    en: { q: "Pick a chaotic truth about yourself:" },
     answers: [
-      { text: "I have been told I 'bring a lot of energy' to a quiet room.", emoji: "🔥", scores: { taco: 2, pizza: 1 } },
-      { text: "I unironically love routine. A schedule is my love language.", emoji: "📅", scores: { hamburger: 2, sushi: 1 } },
-      { text: "I have cried at a commercial in the last 30 days.", emoji: "😭", scores: { ramen: 2, friedchicken: 1 } },
-      { text: "I bought something I didn't need today and it healed me.", emoji: "🛒", scores: { donut: 2, hotdog: 1 } }
+      {
+        ja: { text: "「テンション持ち込みすぎ」と言われたことがある。" },
+        en: { text: "I have been told I 'bring a lot of energy' to a quiet room." },
+        emoji: "🔥", scores: { taco: 2, pizza: 1 }
+      },
+      {
+        ja: { text: "ルーティン大好き。スケジュールは愛。" },
+        en: { text: "I unironically love routine. A schedule is my love language." },
+        emoji: "📅", scores: { hamburger: 2, sushi: 1 }
+      },
+      {
+        ja: { text: "ここ一か月以内にCMで泣いた。" },
+        en: { text: "I have cried at a commercial in the last 30 days." },
+        emoji: "😭", scores: { ramen: 2, friedchicken: 1 }
+      },
+      {
+        ja: { text: "今日も要らないものを買って、心が救われた。" },
+        en: { text: "I bought something I didn't need today and it healed me." },
+        emoji: "🛒", scores: { donut: 2, hotdog: 1 }
+      }
     ]
   },
   {
-    q: "What's your group chat role?",
+    ja: { q: "グループLINEでの役割は？" },
+    en: { q: "What's your group chat role?" },
     answers: [
-      { text: "The planner. If I don't send the 'so when are we doing this,' nothing happens.", emoji: "📋", scores: { hamburger: 2, sushi: 1 } },
-      { text: "The chaos agent. Unhinged screenshots at 1 AM.", emoji: "🤡", scores: { hotdog: 2, taco: 1 } },
-      { text: "The emotional support friend. I read all 47 messages.", emoji: "🫂", scores: { friedchicken: 2, ramen: 1 } },
-      { text: "The morale booster. I send 'we got this 💖' unprompted.", emoji: "🌈", scores: { donut: 2, pizza: 1 } }
+      {
+        ja: { text: "幹事役。「で、いつやる？」を送らないと何も進まない。" },
+        en: { text: "The planner. If I don't send the 'so when are we doing this,' nothing happens." },
+        emoji: "📋", scores: { hamburger: 2, sushi: 1 }
+      },
+      {
+        ja: { text: "カオス担当。深夜1時にヤバいスクショを投下する人。" },
+        en: { text: "The chaos agent. Unhinged screenshots at 1 AM." },
+        emoji: "🤡", scores: { hotdog: 2, taco: 1 }
+      },
+      {
+        ja: { text: "みんなの精神安定剤。47件の長文もちゃんと全部読む。" },
+        en: { text: "The emotional support friend. I read all 47 messages." },
+        emoji: "🫂", scores: { friedchicken: 2, ramen: 1 }
+      },
+      {
+        ja: { text: "盛り上げ役。「みんなファイト💖」と突然送る人。" },
+        en: { text: "The morale booster. I send 'we got this 💖' unprompted." },
+        emoji: "🌈", scores: { donut: 2, pizza: 1 }
+      }
     ]
   },
   {
-    q: "Pick a condiment. Don't overthink it.",
+    ja: { q: "調味料を一つ。考えずに選んで。" },
+    en: { q: "Pick a condiment. Don't overthink it." },
     answers: [
-      { text: "Ketchup. Don't make this weird.", emoji: "🍅", scores: { hamburger: 2, hotdog: 1 } },
-      { text: "Sriracha or something that burns slightly.", emoji: "🌶️", scores: { taco: 2, ramen: 1 } },
-      { text: "Ranch. I will fight you about this.", emoji: "🥛", scores: { pizza: 2, friedchicken: 1 } },
-      { text: "Soy sauce. Carefully. Respectfully. Just a little.", emoji: "🥢", scores: { sushi: 2, donut: 1 } }
+      {
+        ja: { text: "ケチャップ。複雑にしないで。" },
+        en: { text: "Ketchup. Don't make this weird." },
+        emoji: "🍅", scores: { hamburger: 2, hotdog: 1 }
+      },
+      {
+        ja: { text: "ラー油かタバスコ、とにかくピリ辛。" },
+        en: { text: "Sriracha or something that burns slightly." },
+        emoji: "🌶️", scores: { taco: 2, ramen: 1 }
+      },
+      {
+        ja: { text: "マヨネーズ。これだけは譲れない。" },
+        en: { text: "Ranch. I will fight you about this." },
+        emoji: "🥛", scores: { pizza: 2, friedchicken: 1 }
+      },
+      {
+        ja: { text: "醤油。慎重に。控えめに。ほんの一滴。" },
+        en: { text: "Soy sauce. Carefully. Respectfully. Just a little." },
+        emoji: "🥢", scores: { sushi: 2, donut: 1 }
+      }
     ]
   },
   {
-    q: "What's on your kitchen counter right now?",
+    ja: { q: "今、キッチンのカウンターに何がある？" },
+    en: { q: "What's on your kitchen counter right now?" },
     answers: [
-      { text: "A candle, fresh fruit, and a cookbook I pretend to use.", emoji: "🕯️", scores: { sushi: 2, donut: 1 } },
-      { text: "A coffee maker, a pan I should wash, and vibes.", emoji: "☕", scores: { hamburger: 2, friedchicken: 1 } },
-      { text: "Mail from 2 weeks ago and a mug I'm reusing.", emoji: "📬", scores: { hotdog: 2, taco: 1 } },
-      { text: "Seven half-finished projects and an emotional support plant.", emoji: "🌱", scores: { ramen: 2, pizza: 1 } }
+      {
+        ja: { text: "キャンドル、フルーツ、使ってる風の料理本。" },
+        en: { text: "A candle, fresh fruit, and a cookbook I pretend to use." },
+        emoji: "🕯️", scores: { sushi: 2, donut: 1 }
+      },
+      {
+        ja: { text: "コーヒーメーカー、洗うべきフライパン、あとは雰囲気。" },
+        en: { text: "A coffee maker, a pan I should wash, and vibes." },
+        emoji: "☕", scores: { hamburger: 2, friedchicken: 1 }
+      },
+      {
+        ja: { text: "2週間前の郵便物と、使い回してるマグカップ。" },
+        en: { text: "Mail from 2 weeks ago and a mug I'm reusing." },
+        emoji: "📬", scores: { hotdog: 2, taco: 1 }
+      },
+      {
+        ja: { text: "やりかけの何か7つと、心の支えの観葉植物。" },
+        en: { text: "Seven half-finished projects and an emotional support plant." },
+        emoji: "🌱", scores: { ramen: 2, pizza: 1 }
+      }
     ]
   },
   {
-    q: "Someone cuts you off in traffic. You:",
+    ja: { q: "満員電車でぐいぐい押された。あなたは：" },
+    en: { q: "Someone cuts you off in traffic. You:" },
     answers: [
-      { text: "Honk. Gesture. Compose a LinkedIn post about it mentally.", emoji: "📣", scores: { taco: 2, hotdog: 1 } },
-      { text: "Say nothing. Stew. Think about it for 4 days.", emoji: "🫥", scores: { ramen: 2, sushi: 1 } },
-      { text: "Wave them in like 'go ahead, I believe in you.'", emoji: "🙏", scores: { donut: 2, friedchicken: 1 } },
-      { text: "Shrug. It's fine. I wasn't in a rush anyway.", emoji: "😌", scores: { hamburger: 2, pizza: 1 } }
+      {
+        ja: { text: "睨む。舌打ちする。頭の中で長文のポストを書く。" },
+        en: { text: "Honk. Gesture. Compose a LinkedIn post about it mentally." },
+        emoji: "📣", scores: { taco: 2, hotdog: 1 }
+      },
+      {
+        ja: { text: "何も言わない。でも4日間引きずる。" },
+        en: { text: "Say nothing. Stew. Think about it for 4 days." },
+        emoji: "🫥", scores: { ramen: 2, sushi: 1 }
+      },
+      {
+        ja: { text: "「どうぞどうぞ」と一歩譲る。人間を信じてるので。" },
+        en: { text: "Wave them in like 'go ahead, I believe in you.'" },
+        emoji: "🙏", scores: { donut: 2, friedchicken: 1 }
+      },
+      {
+        ja: { text: "肩をすくめる。別に急いでないし。" },
+        en: { text: "Shrug. It's fine. I wasn't in a rush anyway." },
+        emoji: "😌", scores: { hamburger: 2, pizza: 1 }
+      }
     ]
   },
   {
-    q: "Finally — pick a totally random vibe:",
+    ja: { q: "最後に、ランダムな「雰囲気」を選んで：" },
+    en: { q: "Finally — pick a totally random vibe:" },
     answers: [
-      { text: "A neon sign flickering at a roadside diner.", emoji: "🛻", scores: { hamburger: 2, hotdog: 1 } },
-      { text: "A rainy window, a warm bowl, and a sad playlist.", emoji: "🌧️", scores: { ramen: 2, friedchicken: 1 } },
-      { text: "A rooftop at golden hour with all my friends yelling.", emoji: "🌇", scores: { pizza: 2, taco: 1 } },
-      { text: "A quiet morning, a latte, and my life somewhat together.", emoji: "☕", scores: { donut: 2, sushi: 1 } }
+      {
+        ja: { text: "深夜のファミレス、点滅するネオン看板。" },
+        en: { text: "A neon sign flickering at a roadside diner." },
+        emoji: "🛻", scores: { hamburger: 2, hotdog: 1 }
+      },
+      {
+        ja: { text: "雨の窓、温かい丼、エモいプレイリスト。" },
+        en: { text: "A rainy window, a warm bowl, and a sad playlist." },
+        emoji: "🌧️", scores: { ramen: 2, friedchicken: 1 }
+      },
+      {
+        ja: { text: "夕焼けの屋上、友達全員で騒いでる。" },
+        en: { text: "A rooftop at golden hour with all my friends yelling." },
+        emoji: "🌇", scores: { pizza: 2, taco: 1 }
+      },
+      {
+        ja: { text: "静かな朝、ラテ、人生がだいたい整ってる気がする。" },
+        en: { text: "A quiet morning, a latte, and my life somewhat together." },
+        emoji: "☕", scores: { donut: 2, sushi: 1 }
+      }
     ]
   }
 ];
@@ -197,11 +569,17 @@ const QUESTIONS = [
 // ============ STATE ============
 const state = {
   current: 0,
-  scores: Object.fromEntries(Object.keys(TYPES).map(k => [k, 0]))
+  scores: Object.fromEntries(Object.keys(TYPES).map(k => [k, 0])),
+  lang: (localStorage.getItem('ffti_lang')) || 'ja',
+  lastWinner: null
 };
 
 // ============ HELPERS ============
 const $ = id => document.getElementById(id);
+const t = () => UI[state.lang];
+const typeT = (key) => TYPES[key][state.lang];
+const qT = (q) => q[state.lang];
+const aT = (a) => a[state.lang];
 
 // ============ CONFETTI ENGINE ============
 const confettiCanvas = document.createElement('canvas');
@@ -295,16 +673,13 @@ function runConfetti() {
 function bigConfetti() {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  // two side cannons
   spawnConfetti(0, h * 0.7, 80, { angle: -Math.PI / 3, spread: 1, force: 1.4 });
   spawnConfetti(w, h * 0.7, 80, { angle: -Math.PI + Math.PI / 3, spread: 1, force: 1.4 });
-  // top shower
   setTimeout(() => {
     for (let i = 0; i < 6; i++) {
       spawnConfetti(Math.random() * w, -20, 20, { angle: Math.PI / 2, spread: 1.5, force: 0.6 });
     }
   }, 300);
-  // food rain
   setTimeout(() => {
     for (let i = 0; i < 3; i++) {
       spawnConfetti(Math.random() * w, -20, 12, { angle: Math.PI / 2, spread: 1.2, force: 0.5, emojiOnly: true });
@@ -327,19 +702,9 @@ function ripple(e) {
 }
 
 function buttonBurst(e, opts = {}) {
-  const x = e.clientX;
-  const y = e.clientY;
-  spawnConfetti(x, y, opts.count || 18, { force: 0.8, spread: Math.PI * 1.2, angle: -Math.PI / 2, ...opts });
+  spawnConfetti(e.clientX, e.clientY, opts.count || 18, { force: 0.8, spread: Math.PI * 1.2, angle: -Math.PI / 2, ...opts });
 }
 
-function attachButtonJuice(btn, options = {}) {
-  btn.addEventListener('click', (e) => {
-    ripple(e);
-    buttonBurst(e, options);
-  });
-}
-
-// ============ SHAKE + FLOATING EMOJI ============
 function shake(el, intensity = 6) {
   el.animate(
     [
@@ -398,15 +763,58 @@ function swipeTransition(color = '#ffd93d') {
   setTimeout(() => s.remove(), 900);
 }
 
+// ============ i18n APPLY ============
+function applyUI() {
+  const L = t();
+  document.documentElement.lang = state.lang;
+  document.title = L.pageTitle;
+  document.body.classList.toggle('lang-ja', state.lang === 'ja');
+  document.body.classList.toggle('lang-en', state.lang === 'en');
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (L[key] !== undefined) el.textContent = L[key];
+  });
+
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === state.lang);
+  });
+
+  // Menu grid
+  const grid = $('menuGrid');
+  grid.innerHTML = '';
+  Object.entries(TYPES).forEach(([key, type]) => {
+    const item = document.createElement('div');
+    item.className = 'menu-item';
+    item.textContent = `${type.emoji} ${type[state.lang].short}`;
+    grid.appendChild(item);
+  });
+
+  // If quiz is active, re-render current question
+  if ($('quiz').classList.contains('active')) renderQuestion(false);
+
+  // If result is active, re-render current type
+  if ($('result').classList.contains('active') && state.lastWinner) {
+    renderAllTypes(state.lastWinner);
+    showType(state.lastWinner, false);
+  }
+}
+
+function setLang(lang) {
+  if (!UI[lang]) return;
+  state.lang = lang;
+  localStorage.setItem('ffti_lang', lang);
+  applyUI();
+}
+
 // ============ QUIZ RENDER ============
-function renderQuestion() {
+function renderQuestion(animate = true) {
   const total = QUESTIONS.length;
   const q = QUESTIONS[state.current];
   $('questionNumber').textContent = 'Q' + (state.current + 1);
-  $('questionText').textContent = q.q;
-  $('progressLabel').textContent = `QUESTION ${state.current + 1} / ${total}`;
+  $('questionText').textContent = qT(q).q;
+  $('progressLabel').textContent = t().progress(state.current + 1, total);
   $('progressFill').style.width = ((state.current) / total * 100) + '%';
-  $('orderNum').textContent = String(100000 + state.current).slice(1);
 
   const list = $('answerList');
   list.innerHTML = '';
@@ -414,7 +822,7 @@ function renderQuestion() {
     const btn = document.createElement('button');
     btn.className = 'answer-btn';
     btn.style.animationDelay = (i * 0.06) + 's';
-    btn.innerHTML = `<span class="emoji">${a.emoji}</span><span>${a.text}</span>`;
+    btn.innerHTML = `<span class="emoji">${a.emoji}</span><span>${aT(a).text}</span>`;
     btn.addEventListener('click', (e) => {
       ripple(e);
       buttonBurst(e, { count: 22, force: 1 });
@@ -425,15 +833,15 @@ function renderQuestion() {
     list.appendChild(btn);
   });
 
-  // animate the question card in
-  const card = $('questionCard');
-  card.animate(
-    [
-      { transform: 'translateY(30px) rotate(-1deg)', opacity: 0 },
-      { transform: 'translateY(0) rotate(0deg)', opacity: 1 }
-    ],
-    { duration: 400, easing: 'cubic-bezier(0.2, 1.4, 0.4, 1)' }
-  );
+  if (animate) {
+    $('questionCard').animate(
+      [
+        { transform: 'translateY(30px) rotate(-1deg)', opacity: 0 },
+        { transform: 'translateY(0) rotate(0deg)', opacity: 1 }
+      ],
+      { duration: 400, easing: 'cubic-bezier(0.2, 1.4, 0.4, 1)' }
+    );
+  }
 }
 
 function pickAnswer(a) {
@@ -447,7 +855,7 @@ function pickAnswer(a) {
   }
 }
 
-// ============ RESULT REVEAL ============
+// ============ RESULT ============
 function renderAllTypes(activeKey) {
   const grid = $('allTypesGrid');
   grid.innerHTML = '';
@@ -458,8 +866,8 @@ function renderAllTypes(activeKey) {
     if (key === activeKey) card.classList.add('winner');
     card.innerHTML = `
       <span class="type-emoji">${type.emoji}</span>
-      <div class="type-title">${type.name.replace('THE ', '')}</div>
-      <div class="type-tiny">${type.tag}</div>
+      <div class="type-title">${type[state.lang].short}</div>
+      <div class="type-tiny">${type[state.lang].tag}</div>
     `;
     card.addEventListener('click', (e) => {
       ripple(e);
@@ -471,27 +879,28 @@ function renderAllTypes(activeKey) {
   });
 }
 
-function showType(key) {
-  const t = TYPES[key];
-  $('resultEmoji').textContent = t.emoji;
-  $('resultName').textContent = t.name;
-  $('resultTag').textContent = `"${t.tag}"`;
-  $('resultDesc').textContent = t.desc;
-  $('bestFriend').textContent = t.bestFriend;
-  $('worstEnemy').textContent = t.worstEnemy;
-  $('catchphrase').textContent = t.catchphrase;
+function showType(key, animate = true) {
+  const tt = TYPES[key];
+  const ct = tt[state.lang];
+  $('resultEmoji').textContent = tt.emoji;
+  $('resultName').textContent = ct.name;
+  $('resultTag').textContent = `"${ct.tag}"`;
+  $('resultDesc').textContent = ct.desc;
+  $('bestFriend').textContent = ct.bestFriend;
+  $('worstEnemy').textContent = ct.worstEnemy;
+  $('catchphrase').textContent = ct.catchphrase;
 
-  // animate emoji pop
-  $('resultEmoji').animate(
-    [
-      { transform: 'scale(0.6) rotate(-15deg)' },
-      { transform: 'scale(1.25) rotate(8deg)', offset: 0.6 },
-      { transform: 'scale(1) rotate(0deg)' }
-    ],
-    { duration: 500, easing: 'cubic-bezier(0.2, 1.6, 0.4, 1)' }
-  );
+  if (animate) {
+    $('resultEmoji').animate(
+      [
+        { transform: 'scale(0.6) rotate(-15deg)' },
+        { transform: 'scale(1.25) rotate(8deg)', offset: 0.6 },
+        { transform: 'scale(1) rotate(0deg)' }
+      ],
+      { duration: 500, easing: 'cubic-bezier(0.2, 1.6, 0.4, 1)' }
+    );
+  }
 
-  // reset then animate stat bars
   ['statGrease', 'statChaos', 'statHeart', 'statCrunch'].forEach(id => {
     $(id).style.transition = 'none';
     $(id).style.width = '0%';
@@ -501,42 +910,28 @@ function showType(key) {
       ['statGrease', 'statChaos', 'statHeart', 'statCrunch'].forEach(id => {
         $(id).style.transition = 'width 0.8s ease';
       });
-      $('statGrease').style.width = t.stats.grease + '%';
-      $('statChaos').style.width = t.stats.chaos + '%';
-      $('statHeart').style.width = t.stats.heart + '%';
-      $('statCrunch').style.width = t.stats.crunch + '%';
+      $('statGrease').style.width = tt.stats.grease + '%';
+      $('statChaos').style.width = tt.stats.chaos + '%';
+      $('statHeart').style.width = tt.stats.heart + '%';
+      $('statCrunch').style.width = tt.stats.crunch + '%';
     });
   });
 
-  // scroll up to the result, and update active card highlight
-  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('winner'));
-  const cards = document.querySelectorAll('.all-types-grid .type-card');
-  const keys = Object.keys(TYPES);
-  const idx = keys.indexOf(key);
+  document.querySelectorAll('#allTypesGrid .type-card').forEach(c => c.classList.remove('winner'));
+  const cards = document.querySelectorAll('#allTypesGrid .type-card');
+  const idx = Object.keys(TYPES).indexOf(key);
   if (cards[idx]) cards[idx].classList.add('winner');
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (animate) window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showResult() {
   const winner = Object.entries(state.scores).sort((a, b) => b[1] - a[1])[0][0];
-  const t = TYPES[winner];
-  $('resultEmoji').textContent = t.emoji;
-  $('resultName').textContent = t.name;
-  $('resultTag').textContent = `"${t.tag}"`;
-  $('resultDesc').textContent = t.desc;
-  $('bestFriend').textContent = t.bestFriend;
-  $('worstEnemy').textContent = t.worstEnemy;
-  $('catchphrase').textContent = t.catchphrase;
-
-  // Render all types
+  state.lastWinner = winner;
   renderAllTypes(winner);
-
   swipeTransition('#e5202f');
   setTimeout(() => {
     show('result');
-
-    // slot-machine emoji spin before landing on the winner
     const emojiEl = $('resultEmoji');
     const pool = Object.values(TYPES).map(x => x.emoji);
     let spins = 14;
@@ -545,32 +940,18 @@ function showResult() {
       spins--;
       if (spins <= 0) {
         clearInterval(spinInt);
-        emojiEl.textContent = t.emoji;
-        emojiEl.animate(
-          [
-            { transform: 'scale(0.5) rotate(-20deg)', opacity: 0 },
-            { transform: 'scale(1.4) rotate(10deg)', opacity: 1, offset: 0.6 },
-            { transform: 'scale(1) rotate(0deg)', opacity: 1 }
-          ],
-          { duration: 600, easing: 'cubic-bezier(0.2, 1.6, 0.4, 1)' }
-        );
+        showType(winner);
         bigConfetti();
         setTimeout(bigConfetti, 1200);
       }
     }, 70);
-
-    setTimeout(() => {
-      $('statGrease').style.width = t.stats.grease + '%';
-      $('statChaos').style.width = t.stats.chaos + '%';
-      $('statHeart').style.width = t.stats.heart + '%';
-      $('statCrunch').style.width = t.stats.crunch + '%';
-    }, 1400);
   }, 400);
 }
 
 function resetQuiz() {
   state.current = 0;
   Object.keys(state.scores).forEach(k => state.scores[k] = 0);
+  state.lastWinner = null;
   swipeTransition('#22aa22');
   setTimeout(() => {
     renderQuestion();
@@ -579,6 +960,8 @@ function resetQuiz() {
 }
 
 // ============ BIND ============
+applyUI();
+
 $('startBtn').addEventListener('click', (e) => {
   ripple(e);
   buttonBurst(e, { count: 40, force: 1.2 });
@@ -599,28 +982,26 @@ $('shareBtn').addEventListener('click', (e) => {
   ripple(e);
   buttonBurst(e, { count: 30, emojiOnly: true });
   const name = $('resultName').textContent;
-  const text = `I took the FFTI quiz and apparently I'm ${name}. Explain yourselves.`;
+  const text = t().shareText(name);
   if (navigator.share) {
-    navigator.share({ title: 'My Fast Food Type', text, url: location.href }).catch(() => {});
+    navigator.share({ title: t().shareTitle, text, url: location.href }).catch(() => {});
   } else {
     navigator.clipboard?.writeText(text + ' ' + location.href);
-    const btn = $('shareBtn');
-    const old = btn.innerHTML;
-    btn.innerHTML = '<span>✅ COPIED!</span>';
-    setTimeout(() => btn.innerHTML = old, 1500);
+    const span = $('shareBtn').querySelector('span');
+    const old = span.textContent;
+    span.textContent = t().copied;
+    setTimeout(() => span.textContent = old, 1500);
   }
 });
 
-// hover = tiny emoji pop on menu items
-document.querySelectorAll('.menu-item').forEach(item => {
-  const m = item.textContent.match(/\p{Emoji}/u);
-  item.addEventListener('mouseenter', (e) => {
-    const rect = item.getBoundingClientRect();
-    floatEmoji(rect.left + rect.width / 2, rect.top, m ? m[0] : '✨');
+document.querySelectorAll('.lang-btn').forEach(b => {
+  b.addEventListener('click', (e) => {
+    ripple(e);
+    buttonBurst(e, { count: 12, force: 0.7 });
+    setLang(b.dataset.lang);
   });
 });
 
-// title click = confetti burst
 document.querySelector('.logo-burger').addEventListener('click', (e) => {
   buttonBurst(e, { count: 30, force: 1.3, emojiOnly: true });
 });
