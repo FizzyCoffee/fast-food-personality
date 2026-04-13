@@ -1048,12 +1048,14 @@ function toast(msg) {
   const el = $('shareToast');
   el.textContent = msg;
   el.hidden = false;
+  // force a reflow so the transition fires even on rapid successive calls
+  void el.offsetWidth;
   el.classList.add('visible');
   clearTimeout(toast._t);
   toast._t = setTimeout(() => {
     el.classList.remove('visible');
-    setTimeout(() => { el.hidden = true; }, 250);
-  }, 1800);
+    setTimeout(() => { el.hidden = true; }, 300);
+  }, 3200);
 }
 
 // --- Canvas drawing ---
@@ -1332,7 +1334,7 @@ $('lineBtn').addEventListener('click', async (e) => {
   await platformShare(intent, t().imgAttached);
 });
 
-// --- Instagram: no public web intent, so native share on mobile or download-only on desktop ---
+// --- Instagram: no public web intent, so native share on mobile or download + open instagram.com on desktop ---
 $('instagramBtn').addEventListener('click', async (e) => {
   ripple(e);
   buttonBurst(e, { count: 14, force: 0.7 });
@@ -1340,8 +1342,9 @@ $('instagramBtn').addEventListener('click', async (e) => {
   if (!blob) return;
   const filename = `ffti-${state.lastWinner}.png`;
   if (await tryNativeShare(blob, filename)) return;
-  // Desktop: download image + toast hint
+  // Desktop: download image AND open Instagram in a new tab so something visible happens
   downloadBlob(blob, filename);
+  window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
   toast(t().instagramHint);
 });
 
