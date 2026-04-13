@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FFTI — The Fast Food Type Indicator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@500;700&family=Rubik+Mono+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">
+    <span class="logo-burger">🍔</span>
+    <span class="logo-text">FFTI<sup>®</sup></span>
+  </div>
+  <div class="tag">Fast Food Type Indicator — Now with 100% More Grease</div>
+</header>
+
+<!-- LANDING -->
+<section id="landing" class="screen active">
+  <div class="hero">
+    <div class="sunburst"></div>
+    <h1 class="hero-title">
+      <span class="line1">WHAT KIND OF</span>
+      <span class="line2">FAST FOOD</span>
+      <span class="line3">ARE YOU?</span>
+    </h1>
+    <p class="hero-sub">
+      Forget horoscopes. Forget Myers-Briggs. Forget your therapist's "inner child work."
+      Science<sup>*</sup> has determined that every human being is, at their core, a greasy menu item.
+      Take the quiz. Learn the truth. Accept your destiny.
+    </p>
+    <button id="startBtn" class="cta-btn">
+      <span>START QUIZ</span>
+      <span class="cta-sub">🍟 12 questions · 0 nutritional value</span>
+    </button>
+    <p class="disclaimer">*Not actual science. Please do not cite this in your dissertation.</p>
+
+    <div class="menu-sign">
+      <div class="menu-sign-title">★ TODAY'S SPECIALS ★</div>
+      <div class="menu-grid">
+        <div class="menu-item">🍔 THE HAMBURGER</div>
+        <div class="menu-item">🌭 THE HOT DOG</div>
+        <div class="menu-item">🍜 THE RAMEN</div>
+        <div class="menu-item">🍕 THE PIZZA</div>
+        <div class="menu-item">🌮 THE TACO</div>
+        <div class="menu-item">🍣 THE SUSHI</div>
+        <div class="menu-item">🍗 THE FRIED CHICKEN</div>
+        <div class="menu-item">🍩 THE DONUT</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="screen">
+  <div class="quiz-wrapper">
+    <div class="progress-bar">
+      <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+      <div id="progressLabel" class="progress-label">QUESTION 1 / 12</div>
+    </div>
+
+    <div id="questionCard" class="question-card">
+      <div class="question-number" id="questionNumber">Q1</div>
+      <h2 id="questionText" class="question-text"></h2>
+      <div id="answerList" class="answer-list"></div>
+    </div>
+
+    <div class="receipt-footer">
+      <div>ORDER #<span id="orderNum">000001</span></div>
+      <div>THANK YOU FOR CHOOSING YOURSELF</div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section id="result" class="screen">
+  <div class="result-wrapper">
+    <div class="result-stamp">CONGRATULATIONS, YOU ARE A…</div>
+    <div id="resultEmoji" class="result-emoji">🍔</div>
+    <h1 id="resultName" class="result-name">THE HAMBURGER</h1>
+    <div id="resultTag" class="result-tag">"The Reliable Classic"</div>
+
+    <div class="result-card">
+      <p id="resultDesc" class="result-desc"></p>
+
+      <div class="stats-grid">
+        <div class="stat"><div class="stat-label">GREASE</div><div class="stat-bar"><div id="statGrease" class="stat-fill"></div></div></div>
+        <div class="stat"><div class="stat-label">CHAOS</div><div class="stat-bar"><div id="statChaos" class="stat-fill"></div></div></div>
+        <div class="stat"><div class="stat-label">HEART</div><div class="stat-bar"><div id="statHeart" class="stat-fill"></div></div></div>
+        <div class="stat"><div class="stat-label">CRUNCH</div><div class="stat-bar"><div id="statCrunch" class="stat-fill"></div></div></div>
+      </div>
+
+      <div class="compat">
+        <div class="compat-row">
+          <div class="compat-item good">
+            <div class="compat-label">BEST FRIEND</div>
+            <div id="bestFriend" class="compat-value">🍟 Fries</div>
+          </div>
+          <div class="compat-item bad">
+            <div class="compat-label">WORST ENEMY</div>
+            <div id="worstEnemy" class="compat-value">🥗 Salad</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="catchphrase">
+        <div class="catchphrase-label">YOUR CATCHPHRASE:</div>
+        <div id="catchphrase" class="catchphrase-text">"I'm not like other meals."</div>
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <button id="retakeBtn" class="cta-btn small">🔁 RETAKE QUIZ</button>
+      <button id="shareBtn" class="cta-btn small alt">📣 BRAG ABOUT IT</button>
+    </div>
+
+    <div class="all-types">
+      <h3>THE FULL MENU OF PERSONALITIES</h3>
+      <div id="allTypesGrid" class="all-types-grid"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footbar">
+  <div>FFTI™ is a registered trademark of nobody. Calorie info: yes.</div>
+  <div>© 2026 · Made with 🧈 and questionable judgment</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
