@@ -2,7 +2,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body {
-  font-family: 'Fredoka', system-ui, sans-serif;
+  font-family: 'Fredoka', 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Yu Gothic', system-ui, sans-serif;
   background: #fff2c4;
   color: #2a1a00;
   min-height: 100vh;
@@ -45,6 +45,66 @@ body {
   transform: rotate(-2deg);
   box-shadow: 3px 3px 0 #2a1a00;
   font-size: 14px;
+}
+
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.lang-switch {
+  display: flex;
+  background: #2a1a00;
+  border: 3px solid #2a1a00;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 3px 3px 0 #ffd93d;
+}
+.lang-btn {
+  background: #fff;
+  color: #2a1a00;
+  border: none;
+  padding: 6px 14px;
+  font-family: 'Bungee', 'Zen Maru Gothic', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.lang-btn + .lang-btn { border-left: 3px solid #2a1a00; }
+.lang-btn.active {
+  background: #e5202f;
+  color: #fff200;
+}
+.lang-btn:hover:not(.active) { background: #ffd93d; }
+
+/* Japanese mode: slightly tighter Bungee alternatives for non-English display text */
+.lang-ja .hero-title .line1,
+.lang-ja .hero-title .line2,
+.lang-ja .hero-title .line3,
+.lang-ja .question-text,
+.lang-ja .result-name,
+.lang-ja .menu-sign-title,
+.lang-ja .logo-text,
+.lang-ja .question-number,
+.lang-ja .result-stamp,
+.lang-ja .all-types h3,
+.lang-ja .type-card .type-title,
+.lang-ja .stat-label,
+.lang-ja .compat-label,
+.lang-ja .catchphrase-label {
+  font-family: 'Zen Maru Gothic', 'RocknRoll One', 'Hiragino Maru Gothic ProN', 'Yu Gothic', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+.lang-ja .cta-btn { font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; letter-spacing: 1px; }
+.lang-ja .catchphrase-text,
+.lang-ja .result-tag {
+  font-family: 'RocknRoll One', 'Zen Maru Gothic', sans-serif;
+  font-style: normal;
 }
 
 /* ---------- SCREENS ---------- */
