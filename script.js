@@ -83,7 +83,6 @@ const TYPES = {
 };
 
 // ============ QUIZ QUESTIONS ============
-// Each answer adds points to one or more food types.
 const QUESTIONS = [
   {
     q: "It's 2 AM. You are hungry. What's the move?",
@@ -203,12 +202,203 @@ const state = {
 
 // ============ HELPERS ============
 const $ = id => document.getElementById(id);
-const show = id => {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  $(id).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
 
+// ============ CONFETTI ENGINE ============
+const confettiCanvas = document.createElement('canvas');
+confettiCanvas.id = 'confettiCanvas';
+confettiCanvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;';
+document.body.appendChild(confettiCanvas);
+const cctx = confettiCanvas.getContext('2d');
+
+function sizeCanvas() {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+}
+sizeCanvas();
+window.addEventListener('resize', sizeCanvas);
+
+const particles = [];
+const CONFETTI_COLORS = ['#e5202f', '#ffd93d', '#ff8800', '#22aa22', '#ff4a00', '#ffffff', '#ffbf00'];
+const FOOD_EMOJIS = ['🍔','🌭','🍕','🍟','🌮','🍣','🍗','🍩','🍜','🥤','🧀','🥓'];
+
+function spawnConfetti(x, y, count = 40, options = {}) {
+  const { emojiOnly = false, force = 1, spread = Math.PI * 2, angle = -Math.PI / 2 } = options;
+  for (let i = 0; i < count; i++) {
+    const isEmoji = emojiOnly || Math.random() < 0.25;
+    const dir = angle + (Math.random() - 0.5) * spread;
+    const speed = (Math.random() * 8 + 4) * force;
+    particles.push({
+      x, y,
+      vx: Math.cos(dir) * speed,
+      vy: Math.sin(dir) * speed - (emojiOnly ? 0 : Math.random() * 3),
+      g: 0.25 + Math.random() * 0.15,
+      life: 80 + Math.random() * 60,
+      age: 0,
+      size: isEmoji ? 20 + Math.random() * 16 : 6 + Math.random() * 8,
+      color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - 0.5) * 0.4,
+      shape: isEmoji ? 'emoji' : (Math.random() < 0.5 ? 'rect' : 'circle'),
+      emoji: FOOD_EMOJIS[Math.floor(Math.random() * FOOD_EMOJIS.length)]
+    });
+  }
+  if (!confettiRunning) runConfetti();
+}
+
+let confettiRunning = false;
+function runConfetti() {
+  confettiRunning = true;
+  function frame() {
+    cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.age++;
+      p.vy += p.g;
+      p.vx *= 0.99;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      const alpha = Math.max(0, 1 - p.age / p.life);
+      cctx.globalAlpha = alpha;
+      cctx.save();
+      cctx.translate(p.x, p.y);
+      cctx.rotate(p.rot);
+      if (p.shape === 'emoji') {
+        cctx.font = `${p.size}px serif`;
+        cctx.textAlign = 'center';
+        cctx.textBaseline = 'middle';
+        cctx.fillText(p.emoji, 0, 0);
+      } else if (p.shape === 'rect') {
+        cctx.fillStyle = p.color;
+        cctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+      } else {
+        cctx.fillStyle = p.color;
+        cctx.beginPath();
+        cctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+        cctx.fill();
+      }
+      cctx.restore();
+      if (p.age > p.life || p.y > confettiCanvas.height + 50) {
+        particles.splice(i, 1);
+      }
+    }
+    cctx.globalAlpha = 1;
+    if (particles.length > 0) {
+      requestAnimationFrame(frame);
+    } else {
+      confettiRunning = false;
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function bigConfetti() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  // two side cannons
+  spawnConfetti(0, h * 0.7, 80, { angle: -Math.PI / 3, spread: 1, force: 1.4 });
+  spawnConfetti(w, h * 0.7, 80, { angle: -Math.PI + Math.PI / 3, spread: 1, force: 1.4 });
+  // top shower
+  setTimeout(() => {
+    for (let i = 0; i < 6; i++) {
+      spawnConfetti(Math.random() * w, -20, 20, { angle: Math.PI / 2, spread: 1.5, force: 0.6 });
+    }
+  }, 300);
+  // food rain
+  setTimeout(() => {
+    for (let i = 0; i < 3; i++) {
+      spawnConfetti(Math.random() * w, -20, 12, { angle: Math.PI / 2, spread: 1.2, force: 0.5, emojiOnly: true });
+    }
+  }, 600);
+}
+
+// ============ BUTTON JUICE ============
+function ripple(e) {
+  const btn = e.currentTarget;
+  const rect = btn.getBoundingClientRect();
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  const size = Math.max(rect.width, rect.height) * 1.2;
+  r.style.width = r.style.height = size + 'px';
+  r.style.left = (e.clientX - rect.left - size / 2) + 'px';
+  r.style.top = (e.clientY - rect.top - size / 2) + 'px';
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 700);
+}
+
+function buttonBurst(e, opts = {}) {
+  const x = e.clientX;
+  const y = e.clientY;
+  spawnConfetti(x, y, opts.count || 18, { force: 0.8, spread: Math.PI * 1.2, angle: -Math.PI / 2, ...opts });
+}
+
+function attachButtonJuice(btn, options = {}) {
+  btn.addEventListener('click', (e) => {
+    ripple(e);
+    buttonBurst(e, options);
+  });
+}
+
+// ============ SHAKE + FLOATING EMOJI ============
+function shake(el, intensity = 6) {
+  el.animate(
+    [
+      { transform: 'translate(0,0) rotate(0deg)' },
+      { transform: `translate(${-intensity}px,${intensity / 2}px) rotate(-1deg)` },
+      { transform: `translate(${intensity}px,${-intensity / 2}px) rotate(1deg)` },
+      { transform: `translate(${-intensity / 2}px,${intensity}px) rotate(-0.5deg)` },
+      { transform: 'translate(0,0) rotate(0deg)' }
+    ],
+    { duration: 400, easing: 'ease-out' }
+  );
+}
+
+function floatEmoji(x, y, emoji) {
+  const el = document.createElement('div');
+  el.textContent = emoji;
+  el.style.cssText = `
+    position: fixed; left: ${x}px; top: ${y}px;
+    font-size: 32px; pointer-events: none; z-index: 10000;
+    transform: translate(-50%, -50%);
+  `;
+  document.body.appendChild(el);
+  el.animate(
+    [
+      { transform: 'translate(-50%, -50%) scale(0.4)', opacity: 1 },
+      { transform: 'translate(-50%, -200%) scale(1.4)', opacity: 0 }
+    ],
+    { duration: 900, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' }
+  ).onfinish = () => el.remove();
+}
+
+// ============ SCREEN TRANSITION ============
+function show(id, transition = true) {
+  const active = document.querySelector('.screen.active');
+  const next = $(id);
+  if (active === next) return;
+  if (transition && active) {
+    active.classList.add('leaving');
+    setTimeout(() => {
+      active.classList.remove('active', 'leaving');
+      next.classList.add('active', 'entering');
+      setTimeout(() => next.classList.remove('entering'), 600);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 220);
+  } else {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    next.classList.add('active');
+  }
+}
+
+function swipeTransition(color = '#ffd93d') {
+  const s = document.createElement('div');
+  s.className = 'page-swipe';
+  s.style.background = color;
+  document.body.appendChild(s);
+  setTimeout(() => s.remove(), 900);
+}
+
+// ============ QUIZ RENDER ============
 function renderQuestion() {
   const total = QUESTIONS.length;
   const q = QUESTIONS[state.current];
@@ -223,10 +413,27 @@ function renderQuestion() {
   q.answers.forEach((a, i) => {
     const btn = document.createElement('button');
     btn.className = 'answer-btn';
+    btn.style.animationDelay = (i * 0.06) + 's';
     btn.innerHTML = `<span class="emoji">${a.emoji}</span><span>${a.text}</span>`;
-    btn.addEventListener('click', () => pickAnswer(a));
+    btn.addEventListener('click', (e) => {
+      ripple(e);
+      buttonBurst(e, { count: 22, force: 1 });
+      floatEmoji(e.clientX, e.clientY - 20, a.emoji);
+      shake($('questionCard'), 4);
+      pickAnswer(a);
+    });
     list.appendChild(btn);
   });
+
+  // animate the question card in
+  const card = $('questionCard');
+  card.animate(
+    [
+      { transform: 'translateY(30px) rotate(-1deg)', opacity: 0 },
+      { transform: 'translateY(0) rotate(0deg)', opacity: 1 }
+    ],
+    { duration: 400, easing: 'cubic-bezier(0.2, 1.4, 0.4, 1)' }
+  );
 }
 
 function pickAnswer(a) {
@@ -234,12 +441,13 @@ function pickAnswer(a) {
   state.current++;
   if (state.current >= QUESTIONS.length) {
     $('progressFill').style.width = '100%';
-    setTimeout(showResult, 400);
+    setTimeout(showResult, 500);
   } else {
-    renderQuestion();
+    setTimeout(renderQuestion, 180);
   }
 }
 
+// ============ RESULT REVEAL ============
 function showResult() {
   const winner = Object.entries(state.scores).sort((a, b) => b[1] - a[1])[0][0];
   const t = TYPES[winner];
@@ -251,21 +459,13 @@ function showResult() {
   $('worstEnemy').textContent = t.worstEnemy;
   $('catchphrase').textContent = t.catchphrase;
 
-  // Animate stat bars
-  setTimeout(() => {
-    $('statGrease').style.width = t.stats.grease + '%';
-    $('statChaos').style.width = t.stats.chaos + '%';
-    $('statHeart').style.width = t.stats.heart + '%';
-    $('statCrunch').style.width = t.stats.crunch + '%';
-  }, 100);
-
   // Render all types
   const grid = $('allTypesGrid');
   grid.innerHTML = '';
   Object.entries(TYPES).forEach(([key, type]) => {
     const card = document.createElement('div');
     card.className = 'type-card';
-    if (key === winner) card.style.background = '#ffd93d';
+    if (key === winner) card.classList.add('winner');
     card.innerHTML = `
       <span class="type-emoji">${type.emoji}</span>
       <div class="type-title">${type.name.replace('THE ', '')}</div>
@@ -274,25 +474,72 @@ function showResult() {
     grid.appendChild(card);
   });
 
-  show('result');
+  swipeTransition('#e5202f');
+  setTimeout(() => {
+    show('result');
+
+    // slot-machine emoji spin before landing on the winner
+    const emojiEl = $('resultEmoji');
+    const pool = Object.values(TYPES).map(x => x.emoji);
+    let spins = 14;
+    const spinInt = setInterval(() => {
+      emojiEl.textContent = pool[Math.floor(Math.random() * pool.length)];
+      spins--;
+      if (spins <= 0) {
+        clearInterval(spinInt);
+        emojiEl.textContent = t.emoji;
+        emojiEl.animate(
+          [
+            { transform: 'scale(0.5) rotate(-20deg)', opacity: 0 },
+            { transform: 'scale(1.4) rotate(10deg)', opacity: 1, offset: 0.6 },
+            { transform: 'scale(1) rotate(0deg)', opacity: 1 }
+          ],
+          { duration: 600, easing: 'cubic-bezier(0.2, 1.6, 0.4, 1)' }
+        );
+        bigConfetti();
+        setTimeout(bigConfetti, 1200);
+      }
+    }, 70);
+
+    setTimeout(() => {
+      $('statGrease').style.width = t.stats.grease + '%';
+      $('statChaos').style.width = t.stats.chaos + '%';
+      $('statHeart').style.width = t.stats.heart + '%';
+      $('statCrunch').style.width = t.stats.crunch + '%';
+    }, 1400);
+  }, 400);
 }
 
 function resetQuiz() {
   state.current = 0;
   Object.keys(state.scores).forEach(k => state.scores[k] = 0);
-  renderQuestion();
-  show('quiz');
+  swipeTransition('#22aa22');
+  setTimeout(() => {
+    renderQuestion();
+    show('quiz');
+  }, 400);
 }
 
 // ============ BIND ============
-$('startBtn').addEventListener('click', () => {
-  renderQuestion();
-  show('quiz');
+$('startBtn').addEventListener('click', (e) => {
+  ripple(e);
+  buttonBurst(e, { count: 40, force: 1.2 });
+  swipeTransition('#ff8800');
+  setTimeout(() => {
+    renderQuestion();
+    show('quiz');
+  }, 400);
 });
 
-$('retakeBtn').addEventListener('click', resetQuiz);
+$('retakeBtn').addEventListener('click', (e) => {
+  ripple(e);
+  buttonBurst(e, { count: 20 });
+  resetQuiz();
+});
 
-$('shareBtn').addEventListener('click', () => {
+$('shareBtn').addEventListener('click', (e) => {
+  ripple(e);
+  buttonBurst(e, { count: 30, emojiOnly: true });
   const name = $('resultName').textContent;
   const text = `I took the FFTI quiz and apparently I'm ${name}. Explain yourselves.`;
   if (navigator.share) {
@@ -301,7 +548,21 @@ $('shareBtn').addEventListener('click', () => {
     navigator.clipboard?.writeText(text + ' ' + location.href);
     const btn = $('shareBtn');
     const old = btn.innerHTML;
-    btn.innerHTML = '✅ COPIED!';
+    btn.innerHTML = '<span>✅ COPIED!</span>';
     setTimeout(() => btn.innerHTML = old, 1500);
   }
+});
+
+// hover = tiny emoji pop on menu items
+document.querySelectorAll('.menu-item').forEach(item => {
+  const m = item.textContent.match(/\p{Emoji}/u);
+  item.addEventListener('mouseenter', (e) => {
+    const rect = item.getBoundingClientRect();
+    floatEmoji(rect.left + rect.width / 2, rect.top, m ? m[0] : '✨');
+  });
+});
+
+// title click = confetti burst
+document.querySelector('.logo-burger').addEventListener('click', (e) => {
+  buttonBurst(e, { count: 30, force: 1.3, emojiOnly: true });
 });
