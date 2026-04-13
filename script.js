@@ -51,7 +51,9 @@ const UI = {
     imgGrease: "脂っこさ",
     imgChaos: "カオス度",
     imgHeart: "ハート",
-    imgCrunch: "カリカリ度"
+    imgCrunch: "カリカリ度",
+    imgAttached: "✅ 画像を保存しました！投稿に添付してね",
+    instagramHint: "✅ 画像を保存！Instagramで投稿してね📷"
   },
   en: {
     tag: "Fast Food Type Indicator — Now with 100% More Grease",
@@ -100,7 +102,9 @@ const UI = {
     imgGrease: "GREASE",
     imgChaos: "CHAOS",
     imgHeart: "HEART",
-    imgCrunch: "CRUNCH"
+    imgCrunch: "CRUNCH",
+    imgAttached: "✅ IMAGE SAVED — attach it to your post!",
+    instagramHint: "✅ IMAGE SAVED — open Instagram to post 📷"
   }
 };
 
@@ -198,13 +202,14 @@ const TYPES = {
     emoji: "🌮",
     stats: { grease: 60, chaos: 90, heart: 80, crunch: 75 },
     ja: {
-      name: "タコス型",
-      short: "タコス",
-      tag: "美しい崩壊",
-      desc: "楽しい。散らかる。手に持った瞬間に崩れる。それでいい、それが最高。あなたの人生哲学は「どんどんのせろ」。今週すでに3回は何かを床に落とした。誘われたら行く。辛いソースも入れる。ワカモレ追加+200円も即ポチる。最初から綺麗にまとまる気はなかった。誰もあなたにそんなこと期待してない。それがチャーミングポイント。",
-      bestFriend: "🍹 マルガリータ",
-      worstEnemy: "👔 白いシャツ",
-      catchphrase: "「大丈夫、どうにかなる！」"
+      emoji: "🐙",
+      name: "たこ焼き型",
+      short: "たこ焼き",
+      tag: "アツアツのパーティー魂",
+      desc: "あなたは熱い。文字通り、危険なぐらい熱い。初対面で誰かの口を火傷させがち。8個パックが基本なので、一人で現れることはない — 気づけば友達も6人くっついてくる。ソース、マヨ、かつお節、青のりを全身にまとって、屋台文化そのものを体現している。中身はたこ？まあ、実は何でもいい。あなた自身の本質もそう。外はカリッ、中はトロッ、そして絶対に人を笑わせる。",
+      bestFriend: "🍺 キンキンに冷えた生ビール",
+      worstEnemy: "🍽️ お上品なテーブルマナー",
+      catchphrase: "「アツッ！…でも、うまい。」"
     },
     en: {
       name: "THE TACO",
@@ -614,6 +619,7 @@ const t = () => UI[state.lang];
 const typeT = (key) => TYPES[key][state.lang];
 const qT = (q) => q[state.lang];
 const aT = (a) => a[state.lang];
+const emojiOf = (type) => (type[state.lang]?.emoji) || type.emoji;
 
 // ============ CONFETTI ENGINE ============
 const confettiCanvas = document.createElement('canvas');
@@ -820,7 +826,7 @@ function applyUI() {
   Object.entries(TYPES).forEach(([key, type]) => {
     const item = document.createElement('div');
     item.className = 'menu-item';
-    item.textContent = `${type.emoji} ${type[state.lang].short}`;
+    item.textContent = `${emojiOf(type)} ${type[state.lang].short}`;
     grid.appendChild(item);
   });
 
@@ -899,14 +905,14 @@ function renderAllTypes(activeKey) {
     card.type = 'button';
     if (key === activeKey) card.classList.add('winner');
     card.innerHTML = `
-      <span class="type-emoji">${type.emoji}</span>
+      <span class="type-emoji">${emojiOf(type)}</span>
       <div class="type-title">${type[state.lang].short}</div>
       <div class="type-tiny">${type[state.lang].tag}</div>
     `;
     card.addEventListener('click', (e) => {
       ripple(e);
       buttonBurst(e, { count: 16, force: 0.8 });
-      floatEmoji(e.clientX, e.clientY - 10, type.emoji);
+      floatEmoji(e.clientX, e.clientY - 10, emojiOf(type));
       showType(key);
     });
     grid.appendChild(card);
@@ -916,7 +922,7 @@ function renderAllTypes(activeKey) {
 function showType(key, animate = true) {
   const tt = TYPES[key];
   const ct = tt[state.lang];
-  $('resultEmoji').textContent = tt.emoji;
+  $('resultEmoji').textContent = emojiOf(tt);
   $('resultName').textContent = ct.name;
   $('resultTag').textContent = `"${ct.tag}"`;
   $('resultDesc').textContent = ct.desc;
@@ -967,7 +973,7 @@ function showResult() {
   setTimeout(() => {
     show('result');
     const emojiEl = $('resultEmoji');
-    const pool = Object.values(TYPES).map(x => x.emoji);
+    const pool = Object.values(TYPES).map(emojiOf);
     let spins = 14;
     const spinInt = setInterval(() => {
       emojiEl.textContent = pool[Math.floor(Math.random() * pool.length)];
@@ -1103,7 +1109,7 @@ function drawShareCard(typeKey) {
   ctx.font = '220px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(tt.emoji, W / 2, emojiBoxY + 150);
+  ctx.fillText(emojiOf(tt), W / 2, emojiBoxY + 150);
 
   // Type name — big yellow block with shadow
   const nameBoxY = 560;
@@ -1227,50 +1233,75 @@ function wrapText(ctx, text, x, y, maxW, lineH) {
   lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineH));
 }
 
-// --- Download / share handlers ---
+// --- Share helpers ---
+function canvasToBlob() {
+  return new Promise((r) => $('shareCanvas').toBlob((b) => r(b), 'image/png'));
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// Try native share with file+text+url. Returns true if succeeded, false if cancelled/unsupported.
+async function tryNativeShare(blob, filename) {
+  try {
+    const file = new File([blob], filename, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: t().shareTitle,
+        text: t().shareText(TYPES[state.lastWinner][state.lang].name),
+        url: shareUrlFor(state.lastWinner)
+      });
+      return true;
+    }
+  } catch (err) {
+    if (err?.name === 'AbortError') return true; // cancelled — don't fall through
+  }
+  return false;
+}
+
+// Open a platform: try native share first (with image), fall back to download image + open intent URL
+async function platformShare(intentUrl, toastMsg) {
+  const blob = await canvasToBlob();
+  if (!blob) return;
+  const filename = `ffti-${state.lastWinner}.png`;
+  if (await tryNativeShare(blob, filename)) return;
+  // Desktop fallback: download image silently, then open platform intent in new tab
+  downloadBlob(blob, filename);
+  if (intentUrl) window.open(intentUrl, '_blank', 'noopener,noreferrer');
+  toast(toastMsg);
+}
+
+// --- Download button: explicit save ---
 $('downloadBtn').addEventListener('click', async (e) => {
   ripple(e);
   buttonBurst(e, { count: 18, force: 0.8 });
-  const canvas = $('shareCanvas');
+  const blob = await canvasToBlob();
+  if (!blob) return;
   const filename = `ffti-${state.lastWinner}.png`;
-  canvas.toBlob(async (blob) => {
-    if (!blob) { toast('⚠️'); return; }
-    // Prefer native share sheet on mobile (iOS Safari, Android Chrome) — gives "Save Image"
-    try {
-      const file = new File([blob], filename, { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: t().shareTitle,
-          text: t().shareText(TYPES[state.lastWinner][state.lang].name)
-        });
-        toast(t().imageSaved);
-        return;
-      }
-    } catch (err) {
-      if (err?.name === 'AbortError') return; // user cancelled — don't fall through
-    }
-    // Desktop / fallback: anchor download
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.rel = 'noopener';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-    toast(t().imageSaved);
-  }, 'image/png');
+  if (await tryNativeShare(blob, filename)) { toast(t().imageSaved); return; }
+  downloadBlob(blob, filename);
+  toast(t().imageSaved);
 });
 
-$('copyLinkBtn').addEventListener('click', (e) => {
+// --- Copy link: keep link-only, but also download image so user has both ---
+$('copyLinkBtn').addEventListener('click', async (e) => {
   ripple(e);
   buttonBurst(e, { count: 16, force: 0.7 });
   const url = shareUrlFor(state.lastWinner);
-  if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(url).then(() => toast(t().linkCopied));
-  } else {
+  try {
+    await navigator.clipboard.writeText(url);
+    toast(t().linkCopied);
+  } catch {
     const ta = document.createElement('textarea');
     ta.value = url;
     document.body.appendChild(ta);
@@ -1280,23 +1311,38 @@ $('copyLinkBtn').addEventListener('click', (e) => {
   }
 });
 
-$('twitterBtn').addEventListener('click', (e) => {
+// --- Twitter / X: native share w/ image, else download + open intent ---
+$('twitterBtn').addEventListener('click', async (e) => {
   ripple(e);
   buttonBurst(e, { count: 14, force: 0.7 });
   const name = TYPES[state.lastWinner][state.lang].name;
   const text = t().shareText(name);
   const url = shareUrlFor(state.lastWinner);
   const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-  window.open(intent, '_blank', 'noopener,noreferrer');
+  await platformShare(intent, t().imgAttached);
 });
 
-$('lineBtn').addEventListener('click', (e) => {
+// --- LINE: native share w/ image, else download + open LINE web intent ---
+$('lineBtn').addEventListener('click', async (e) => {
   ripple(e);
   buttonBurst(e, { count: 14, force: 0.7 });
   const name = TYPES[state.lastWinner][state.lang].name;
   const text = t().shareText(name) + ' ' + shareUrlFor(state.lastWinner);
   const intent = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
-  window.open(intent, '_blank', 'noopener,noreferrer');
+  await platformShare(intent, t().imgAttached);
+});
+
+// --- Instagram: no public web intent, so native share on mobile or download-only on desktop ---
+$('instagramBtn').addEventListener('click', async (e) => {
+  ripple(e);
+  buttonBurst(e, { count: 14, force: 0.7 });
+  const blob = await canvasToBlob();
+  if (!blob) return;
+  const filename = `ffti-${state.lastWinner}.png`;
+  if (await tryNativeShare(blob, filename)) return;
+  // Desktop: download image + toast hint
+  downloadBlob(blob, filename);
+  toast(t().instagramHint);
 });
 
 document.querySelectorAll('#shareModal [data-close], #shareModal .share-close').forEach(el => {
