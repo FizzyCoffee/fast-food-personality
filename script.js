@@ -34,7 +34,24 @@ const UI = {
     shareText: (name) => `FFTI 診断を受けたら「${name}」でした。どういうこと？`,
     shareTitle: "私のファストフードタイプ",
     copied: "✅ コピー済み！",
-    pageTitle: "FFTI — ファストフード性格診断"
+    pageTitle: "FFTI — ファストフード性格診断",
+    // share modal
+    shareModalTitle: "結果をシェアしよう",
+    shareModalSub: "画像でもリンクでも、お好きな方法で。",
+    downloadBtn: "画像をダウンロード",
+    copyLinkBtn: "リンクをコピー",
+    linkCopied: "✅ リンクをコピーしました",
+    imageSaved: "✅ 画像を保存しました",
+    fromFriend: "👋 友達があなたにこの診断をシェアしました — 自分でもやってみる？",
+    takeQuizBtn: "自分で診断する",
+    imgFooter: "FFTI® ・ ファストフード性格診断",
+    imgHeader: "私のファストフードタイプは…",
+    imgBestLabel: "相性 ◎",
+    imgWorstLabel: "相性 ✕",
+    imgGrease: "脂っこさ",
+    imgChaos: "カオス度",
+    imgHeart: "ハート",
+    imgCrunch: "カリカリ度"
   },
   en: {
     tag: "Fast Food Type Indicator — Now with 100% More Grease",
@@ -66,7 +83,24 @@ const UI = {
     shareText: (name) => `I took the FFTI quiz and apparently I'm ${name}. Explain yourselves.`,
     shareTitle: "My Fast Food Type",
     copied: "✅ COPIED!",
-    pageTitle: "FFTI — The Fast Food Type Indicator"
+    pageTitle: "FFTI — The Fast Food Type Indicator",
+    // share modal
+    shareModalTitle: "SHARE YOUR RESULT",
+    shareModalSub: "Download an image or share a link — you choose.",
+    downloadBtn: "Download Image",
+    copyLinkBtn: "Copy Link",
+    linkCopied: "✅ LINK COPIED",
+    imageSaved: "✅ IMAGE SAVED",
+    fromFriend: "👋 A friend sent you this quiz — wanna take it yourself?",
+    takeQuizBtn: "TAKE THE QUIZ",
+    imgFooter: "FFTI® · Fast Food Type Indicator",
+    imgHeader: "My fast food type is…",
+    imgBestLabel: "BEST FRIEND",
+    imgWorstLabel: "WORST ENEMY",
+    imgGrease: "GREASE",
+    imgChaos: "CHAOS",
+    imgHeart: "HEART",
+    imgCrunch: "CRUNCH"
   }
 };
 
@@ -981,17 +1015,300 @@ $('retakeBtn').addEventListener('click', (e) => {
 $('shareBtn').addEventListener('click', (e) => {
   ripple(e);
   buttonBurst(e, { count: 30, emojiOnly: true });
-  const name = $('resultName').textContent;
-  const text = t().shareText(name);
-  if (navigator.share) {
-    navigator.share({ title: t().shareTitle, text, url: location.href }).catch(() => {});
-  } else {
-    navigator.clipboard?.writeText(text + ' ' + location.href);
-    const span = $('shareBtn').querySelector('span');
-    const old = span.textContent;
-    span.textContent = t().copied;
-    setTimeout(() => span.textContent = old, 1500);
+  openShareModal();
+});
+
+// ============ SHARE MODAL + EXPORT ============
+function shareUrlFor(typeKey) {
+  const u = new URL(location.href);
+  u.search = '?r=' + encodeURIComponent(typeKey);
+  u.hash = '';
+  return u.toString();
+}
+
+function openShareModal() {
+  if (!state.lastWinner) return;
+  drawShareCard(state.lastWinner);
+  $('shareModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeShareModal() {
+  $('shareModal').hidden = true;
+  document.body.style.overflow = '';
+}
+
+function toast(msg) {
+  const el = $('shareToast');
+  el.textContent = msg;
+  el.hidden = false;
+  el.classList.add('visible');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => {
+    el.classList.remove('visible');
+    setTimeout(() => { el.hidden = true; }, 250);
+  }, 1800);
+}
+
+// --- Canvas drawing ---
+function drawShareCard(typeKey) {
+  const canvas = $('shareCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const tt = TYPES[typeKey];
+  const ct = tt[state.lang];
+  const L = t();
+
+  // Background: red with sunburst
+  ctx.fillStyle = '#e5202f';
+  ctx.fillRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2;
+  const rayCount = 36;
+  ctx.save();
+  ctx.translate(cx, cy);
+  for (let i = 0; i < rayCount; i++) {
+    ctx.rotate((Math.PI * 2) / rayCount);
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 215, 61, 0.22)' : 'rgba(255, 255, 255, 0.08)';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(W, -60);
+    ctx.lineTo(W, 60);
+    ctx.closePath();
+    ctx.fill();
   }
+  ctx.restore();
+
+  // Top stamp
+  const stampY = 90;
+  drawRoundedRect(ctx, W / 2 - 280, stampY, 560, 70, 35, '#ffd93d', '#2a1a00', 6);
+  ctx.fillStyle = '#2a1a00';
+  ctx.font = '700 32px "Zen Maru Gothic", "Bungee", system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(L.imgHeader, W / 2, stampY + 35);
+
+  // Big emoji in white circle
+  const emojiBoxY = 230;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(W / 2, emojiBoxY + 150, 170, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.lineWidth = 10;
+  ctx.strokeStyle = '#2a1a00';
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.font = '220px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(tt.emoji, W / 2, emojiBoxY + 150);
+
+  // Type name — big yellow block with shadow
+  const nameBoxY = 560;
+  const nameBoxH = 130;
+  ctx.save();
+  ctx.fillStyle = '#2a1a00';
+  roundRectPath(ctx, 70 + 8, nameBoxY + 8, W - 140, nameBoxH, 22);
+  ctx.fill();
+  drawRoundedRect(ctx, 70, nameBoxY, W - 140, nameBoxH, 22, '#ffd93d', '#2a1a00', 8);
+  ctx.restore();
+  ctx.fillStyle = '#e5202f';
+  ctx.font = '900 70px "Zen Maru Gothic", "Bungee", system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const nameText = ct.name;
+  ctx.fillText(fitText(ctx, nameText, W - 180, 70, 40), W / 2, nameBoxY + nameBoxH / 2);
+
+  // Tag line
+  const tagY = nameBoxY + nameBoxH + 50;
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '600 34px "Zen Maru Gothic", "Rubik Mono One", system-ui, sans-serif';
+  ctx.fillText(`"${ct.tag}"`, W / 2, tagY);
+
+  // Stats bars
+  const statsTop = tagY + 70;
+  const barW = 460;
+  const barH = 28;
+  const rowGap = 60;
+  const labels = [L.imgGrease, L.imgChaos, L.imgHeart, L.imgCrunch];
+  const values = [tt.stats.grease, tt.stats.chaos, tt.stats.heart, tt.stats.crunch];
+  const leftX = W / 2 - barW / 2;
+
+  labels.forEach((lab, i) => {
+    const y = statsTop + i * rowGap;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 24px "Zen Maru Gothic", "Bungee", system-ui, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(lab, leftX, y);
+    ctx.textAlign = 'right';
+    ctx.fillText(values[i] + '%', leftX + barW, y);
+    // bar
+    const bY = y + 18;
+    drawRoundedRect(ctx, leftX, bY, barW, barH, barH / 2, '#ffffff', '#2a1a00', 4);
+    const fillW = Math.max(0, (barW - 8) * values[i] / 100);
+    ctx.save();
+    roundRectPath(ctx, leftX + 4, bY + 4, fillW, barH - 8, (barH - 8) / 2);
+    ctx.clip();
+    const grad = ctx.createLinearGradient(leftX, bY, leftX + barW, bY);
+    grad.addColorStop(0, '#22aa22');
+    grad.addColorStop(0.5, '#ffd93d');
+    grad.addColorStop(1, '#ff4a00');
+    ctx.fillStyle = grad;
+    ctx.fillRect(leftX + 4, bY + 4, fillW, barH - 8);
+    ctx.restore();
+  });
+
+  // Catchphrase box
+  const cpY = statsTop + labels.length * rowGap + 40;
+  const cpH = 140;
+  drawRoundedRect(ctx, 70, cpY, W - 140, cpH, 22, '#2a1a00', '#ffd93d', 6);
+  ctx.fillStyle = '#ffd93d';
+  ctx.font = '700 28px "Zen Maru Gothic", "Rubik Mono One", system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  wrapText(ctx, ct.catchphrase, W / 2, cpY + cpH / 2, W - 200, 40);
+
+  // Footer
+  const footerY = H - 60;
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '600 26px "Zen Maru Gothic", "Bungee", system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(L.imgFooter, W / 2, footerY - 24);
+  ctx.font = '500 22px system-ui, sans-serif';
+  ctx.fillText('fizzycoffee.github.io/fast-food-personality', W / 2, footerY + 8);
+}
+
+function drawRoundedRect(ctx, x, y, w, h, r, fill, stroke, lw) {
+  roundRectPath(ctx, x, y, w, h, r);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 2; ctx.stroke(); }
+}
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function fitText(ctx, text, maxW, startSize, minSize) {
+  let size = startSize;
+  while (size > minSize) {
+    ctx.font = `900 ${size}px "Zen Maru Gothic", "Bungee", system-ui, sans-serif`;
+    if (ctx.measureText(text).width <= maxW) break;
+    size -= 2;
+  }
+  return text;
+}
+function wrapText(ctx, text, x, y, maxW, lineH) {
+  // Simple wrap: try to break by char for CJK, by word otherwise
+  const hasCJK = /[\u3000-\u30ff\u4e00-\u9fff\uff00-\uffef]/.test(text);
+  const tokens = hasCJK ? text.split('') : text.split(' ');
+  const sep = hasCJK ? '' : ' ';
+  const lines = [];
+  let line = '';
+  for (const tok of tokens) {
+    const test = line ? line + sep + tok : tok;
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line);
+      line = tok;
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  const total = lines.length;
+  const startY = y - ((total - 1) * lineH) / 2;
+  lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineH));
+}
+
+// --- Download / share handlers ---
+$('downloadBtn').addEventListener('click', (e) => {
+  ripple(e);
+  buttonBurst(e, { count: 18, force: 0.8 });
+  const canvas = $('shareCanvas');
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ffti-${state.lastWinner}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast(t().imageSaved);
+  }, 'image/png');
+});
+
+$('copyLinkBtn').addEventListener('click', (e) => {
+  ripple(e);
+  buttonBurst(e, { count: 16, force: 0.7 });
+  const url = shareUrlFor(state.lastWinner);
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(url).then(() => toast(t().linkCopied));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); toast(t().linkCopied); } catch (_) {}
+    ta.remove();
+  }
+});
+
+$('twitterBtn').addEventListener('click', (e) => {
+  ripple(e);
+  buttonBurst(e, { count: 14, force: 0.7 });
+  const name = TYPES[state.lastWinner][state.lang].name;
+  const text = t().shareText(name);
+  const url = shareUrlFor(state.lastWinner);
+  const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+  window.open(intent, '_blank', 'noopener,noreferrer');
+});
+
+$('lineBtn').addEventListener('click', (e) => {
+  ripple(e);
+  buttonBurst(e, { count: 14, force: 0.7 });
+  const name = TYPES[state.lastWinner][state.lang].name;
+  const text = t().shareText(name) + ' ' + shareUrlFor(state.lastWinner);
+  const intent = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
+  window.open(intent, '_blank', 'noopener,noreferrer');
+});
+
+document.querySelectorAll('#shareModal [data-close], #shareModal .share-close').forEach(el => {
+  el.addEventListener('click', closeShareModal);
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('shareModal').hidden) closeShareModal();
+});
+
+// ============ DEEP LINK (?r=type) ============
+(function handleDeepLink() {
+  const params = new URLSearchParams(location.search);
+  const r = params.get('r');
+  if (r && TYPES[r]) {
+    state.lastWinner = r;
+    renderAllTypes(r);
+    show('result', false);
+    showType(r);
+    $('fromFriendBanner').hidden = false;
+  }
+})();
+
+$('takeQuizBtn').addEventListener('click', (e) => {
+  ripple(e);
+  buttonBurst(e, { count: 20, force: 0.9 });
+  $('fromFriendBanner').hidden = true;
+  // remove ?r= from url without full reload
+  const u = new URL(location.href);
+  u.search = '';
+  history.replaceState({}, '', u.toString());
+  resetQuiz();
 });
 
 document.querySelectorAll('.lang-btn').forEach(b => {

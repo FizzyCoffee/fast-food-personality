@@ -25,6 +25,12 @@
   </div>
 </header>
 
+<!-- FROM-FRIEND BANNER (visible when arriving via shared link) -->
+<div id="fromFriendBanner" class="from-friend" hidden>
+  <span data-i18n="fromFriend"></span>
+  <button id="takeQuizBtn" class="from-friend-btn"><span data-i18n="takeQuizBtn"></span></button>
+</div>
+
 <!-- LANDING -->
 <section id="landing" class="screen active">
   <div class="hero">
@@ -117,6 +123,41 @@
     </div>
   </div>
 </section>
+
+<!-- SHARE MODAL -->
+<div id="shareModal" class="share-modal" hidden>
+  <div class="share-modal-backdrop" data-close></div>
+  <div class="share-modal-panel">
+    <button class="share-close" data-close aria-label="close">✕</button>
+    <div class="share-modal-title" data-i18n="shareModalTitle"></div>
+    <div class="share-modal-sub" data-i18n="shareModalSub"></div>
+
+    <div class="share-preview">
+      <canvas id="shareCanvas" width="1080" height="1350"></canvas>
+    </div>
+
+    <div class="share-buttons">
+      <button id="downloadBtn" class="share-btn primary">
+        <span class="share-btn-emoji">📸</span>
+        <span data-i18n="downloadBtn"></span>
+      </button>
+      <button id="copyLinkBtn" class="share-btn">
+        <span class="share-btn-emoji">🔗</span>
+        <span data-i18n="copyLinkBtn"></span>
+      </button>
+      <button id="twitterBtn" class="share-btn twitter">
+        <span class="share-btn-emoji">𝕏</span>
+        <span>X / Twitter</span>
+      </button>
+      <button id="lineBtn" class="share-btn line">
+        <span class="share-btn-emoji">💬</span>
+        <span>LINE</span>
+      </button>
+    </div>
+
+    <div id="shareToast" class="share-toast" hidden></div>
+  </div>
+</div>
 
 <footer class="footbar">
   <div data-i18n="footerLeft"></div>
