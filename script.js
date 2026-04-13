@@ -33,7 +33,8 @@ const UI = {
     orderNum: (n) => `注文番号 #${n}`,
     shareText: (name) => `FFTI 診断を受けたら「${name}」でした。どういうこと？`,
     shareTitle: "私のファストフードタイプ",
-    copied: "✅ コピー済み！"
+    copied: "✅ コピー済み！",
+    pageTitle: "FFTI — ファストフード性格診断"
   },
   en: {
     tag: "Fast Food Type Indicator — Now with 100% More Grease",
@@ -64,7 +65,8 @@ const UI = {
     orderNum: (n) => `ORDER #${n}`,
     shareText: (name) => `I took the FFTI quiz and apparently I'm ${name}. Explain yourselves.`,
     shareTitle: "My Fast Food Type",
-    copied: "✅ COPIED!"
+    copied: "✅ COPIED!",
+    pageTitle: "FFTI — The Fast Food Type Indicator"
   }
 };
 
@@ -765,6 +767,7 @@ function swipeTransition(color = '#ffd93d') {
 function applyUI() {
   const L = t();
   document.documentElement.lang = state.lang;
+  document.title = L.pageTitle;
   document.body.classList.toggle('lang-ja', state.lang === 'ja');
   document.body.classList.toggle('lang-en', state.lang === 'en');
 
