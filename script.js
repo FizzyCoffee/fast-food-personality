@@ -1228,19 +1228,38 @@ function wrapText(ctx, text, x, y, maxW, lineH) {
 }
 
 // --- Download / share handlers ---
-$('downloadBtn').addEventListener('click', (e) => {
+$('downloadBtn').addEventListener('click', async (e) => {
   ripple(e);
   buttonBurst(e, { count: 18, force: 0.8 });
   const canvas = $('shareCanvas');
-  canvas.toBlob((blob) => {
+  const filename = `ffti-${state.lastWinner}.png`;
+  canvas.toBlob(async (blob) => {
+    if (!blob) { toast('⚠️'); return; }
+    // Prefer native share sheet on mobile (iOS Safari, Android Chrome) — gives "Save Image"
+    try {
+      const file = new File([blob], filename, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: t().shareTitle,
+          text: t().shareText(TYPES[state.lastWinner][state.lang].name)
+        });
+        toast(t().imageSaved);
+        return;
+      }
+    } catch (err) {
+      if (err?.name === 'AbortError') return; // user cancelled — don't fall through
+    }
+    // Desktop / fallback: anchor download
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ffti-${state.lastWinner}.png`;
+    a.download = filename;
+    a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
     a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
     toast(t().imageSaved);
   }, 'image/png');
 });
