@@ -53,7 +53,8 @@ const UI = {
     imgHeart: "ハート",
     imgCrunch: "カリカリ度",
     imgAttached: "✅ 画像を保存しました！投稿に添付してね",
-    instagramHint: "✅ 画像を保存！Instagramで投稿してね📷"
+    instagramHint: "① 画像を保存 → ② Instagramで投稿📷",
+    instagramStep1: "まず画像を保存してね！"
   },
   en: {
     tag: "Fast Food Type Indicator — Now with 100% More Grease",
@@ -104,7 +105,8 @@ const UI = {
     imgHeart: "HEART",
     imgCrunch: "CRUNCH",
     imgAttached: "✅ IMAGE SAVED — attach it to your post!",
-    instagramHint: "✅ IMAGE SAVED — open Instagram to post 📷"
+    instagramHint: "① Save image → ② Post on Instagram 📷",
+    instagramStep1: "Save the image first!"
   }
 };
 
@@ -1334,18 +1336,29 @@ $('lineBtn').addEventListener('click', async (e) => {
   await platformShare(intent, t().imgAttached);
 });
 
-// --- Instagram: no public web intent, so native share on mobile or download + open instagram.com on desktop ---
+// --- Instagram: two-step flow (save image → open Instagram) ---
+// Instagram has no web share API — the only path is save + manual upload.
 $('instagramBtn').addEventListener('click', async (e) => {
   ripple(e);
   buttonBurst(e, { count: 14, force: 0.7 });
   const blob = await canvasToBlob();
   if (!blob) return;
   const filename = `ffti-${state.lastWinner}.png`;
-  if (await tryNativeShare(blob, filename)) return;
-  // Desktop: download image AND open Instagram in a new tab so something visible happens
+
+  // On mobile: try native share so user can "Save Image" from the sheet
+  const shared = await tryNativeShare(blob, filename);
+  if (shared) {
+    // After they saved, show hint to open Instagram
+    toast(t().instagramHint);
+    return;
+  }
+
+  // Desktop: download image, show step-by-step toast, then open Instagram after a short delay
   downloadBlob(blob, filename);
-  window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
   toast(t().instagramHint);
+  setTimeout(() => {
+    window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+  }, 1200);
 });
 
 document.querySelectorAll('#shareModal [data-close], #shareModal .share-close').forEach(el => {
